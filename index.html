@@ -1,147 +1,169 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>VistaNet Bolivia - Clon Básico</title>
-    <style>
-        * {
-            margin: 0; padding: 0; box-sizing: border-box;
-        }
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: #fff;
-            color: #333;
-        }
-        header {
-            background: #004a99;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 12px 20px;
-        }
-        .logo img {
-            height: 50px;
-            object-fit: contain;
-        }
-        nav ul {
-            list-style: none;
-            display: flex;
-            gap: 18px;
-        }
-        nav ul li a {
-            color: #fff;
-            text-decoration: none;
-            font-weight: 600;
-            padding: 8px 12px;
-            border-radius: 4px;
-            transition: background 0.3s ease;
-        }
-        nav ul li a:hover {
-            background: #ffd600;
-            color: #004a99;
-        }
-        .hero {
-            background-image: url('https://images.unsplash.com/photo-1504384308090-c894fdcc538d?auto=format&fit=crop&w=1200&q=80');
-            background-position: center;
-            background-size: cover;
-            height: 420px;
-            border-radius: 10px;
-            margin: 30px 20px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-size: 38px;
-            font-weight: bold;
-            text-shadow: 0 0 8px rgba(0,0,0,0.7);
-        }
-        .services {
-            max-width: 1200px;
-            margin: 40px auto;
-            display: flex;
-            justify-content: space-around;
-            gap: 25px;
-            padding: 0 20px;
-            flex-wrap: wrap;
-        }
-        .service-card {
-            background: #f5f5f5;
-            padding: 25px;
-            flex: 1 1 280px;
-            border-radius: 8px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-            transition: box-shadow 0.3s ease;
-            cursor: pointer;
-            text-align: center;
-        }
-        .service-card:hover {
-            box-shadow: 0 6px 20px rgba(0,0,0,0.15);
-        }
-        .service-card h3 {
-            color: #004a99;
-            margin-bottom: 15px;
-        }
-        footer {
-            background: #222;
-            color: #ccc;
-            text-align: center;
-            padding: 18px 10px;
-            font-size: 14px;
-            margin-top: 60px;
-        }
-        @media(max-width: 768px) {
-            .services {
-                flex-direction: column;
-                margin: 20px;
-            }
-            .hero {
-                height: 300px;
-                font-size: 28px;
-                margin: 20px 10px;
-            }
-        }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Login y Mapa FTTx</title>
+  <style>
+    body, html {
+      margin: 0; padding: 0; height: 100%;
+      font-family: Arial, sans-serif;
+      background: #f0f2f5;
+    }
+    #login-container {
+      height: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    #login-box {
+      background: white;
+      padding: 2rem;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      width: 300px;
+    }
+    #login-box h2 {
+      margin-bottom: 1rem;
+      text-align: center;
+    }
+    #login-box input[type="text"],
+    #login-box input[type="password"] {
+      width: 100%;
+      padding: 0.5rem;
+      margin: 0.5rem 0 1rem 0;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+    #login-box button {
+      width: 100%;
+      padding: 0.7rem;
+      background: #007bff;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+    #login-box button:hover {
+      background: #0056b3;
+    }
+
+    #map {
+      height: 100vh;
+      width: 100vw;
+      display: none;
+    }
+
+    #logout-btn {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: #dc3545;
+      color: white;
+      border: none;
+      padding: 0.5rem 1rem;
+      border-radius: 4px;
+      cursor: pointer;
+      z-index: 1000;
+      display: none;
+    }
+    #logout-btn:hover {
+      background: #a71d2a;
+    }
+  </style>
+
+  <!-- Leaflet CSS -->
+  <link
+    rel="stylesheet"
+    href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    integrity="sha256-sA+4VzMh39LjCFDrJvEChUW2h0OWqAGFOM7F8D/ej2c="
+    crossorigin=""
+  />
 </head>
 <body>
 
-<header>
-    <div class="logo">
-        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTuHORcqHuqtAHNcuy_WHeAPd0pX6x8zTDbPA&s" alt="Logo VistaNet" />
+  <div id="login-container">
+    <div id="login-box">
+      <h2>Iniciar sesión</h2>
+      <input type="text" id="username" placeholder="Usuario" />
+      <input type="password" id="password" placeholder="Contraseña" />
+      <button onclick="login()">Entrar</button>
+      <p id="error-msg" style="color:red; display:none;">Usuario o contraseña incorrectos</p>
     </div>
-    <nav>
-        <ul>
-            <li><a href="#">Inicio</a></li>
-            <li><a href="#">Internet</a></li>
-            <li><a href="#">Televisión</a></li>
-            <li><a href="#">Soporte</a></li>
-            <li><a href="#">Contacto</a></li>
-        </ul>
-    </nav>
-</header>
+  </div>
 
-<section class="hero">
-    ¡Conéctate con VistaNet!
-</section>
+  <button id="logout-btn" onclick="logout()">Cerrar sesión</button>
 
-<section class="services">
-    <div class="service-card">
-        <h3>Internet Fibra Óptica</h3>
-        <p>Velocidad y estabilidad para tu hogar y empresa.</p>
-    </div>
-    <div class="service-card">
-        <h3>Televisión HD</h3>
-        <p>Disfruta de tus canales favoritos con calidad superior.</p>
-    </div>
-    <div class="service-card">
-        <h3>Soporte Técnico</h3>
-        <p>Atención personalizada para resolver tus dudas y problemas.</p>
-    </div>
-</section>
+  <div id="map"></div>
 
-<footer>
-    &copy; 2025 VistaNet Bolivia - Todos los derechos reservados
-</footer>
+  <!-- Leaflet JS -->
+  <script
+    src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+    integrity="sha256-o9N1jvkqpuvCkA9QdLOI2pztD4oPe1rH9C9g3+JbVlw="
+    crossorigin=""
+  ></script>
 
+  <script>
+    const validUser = "admin";
+    const validPass = "1234";
+
+    const loginContainer = document.getElementById("login-container");
+    const mapDiv = document.getElementById("map");
+    const logoutBtn = document.getElementById("logout-btn");
+    const errorMsg = document.getElementById("error-msg");
+
+    function login() {
+      const user = document.getElementById("username").value.trim();
+      const pass = document.getElementById("password").value.trim();
+
+      if (user === validUser && pass === validPass) {
+        errorMsg.style.display = "none";
+        loginContainer.style.display = "none";
+        mapDiv.style.display = "block";
+        logoutBtn.style.display = "block";
+        initMap();
+      } else {
+        errorMsg.style.display = "block";
+      }
+    }
+
+    function logout() {
+      loginContainer.style.display = "flex";
+      mapDiv.style.display = "none";
+      logoutBtn.style.display = "none";
+      // limpiar inputs
+      document.getElementById("username").value = "";
+      document.getElementById("password").value = "";
+      errorMsg.style.display = "none";
+    }
+
+    function initMap() {
+      // Verificar si ya está creado
+      if (window.map) return;
+
+      window.map = L.map("map").setView([-16.5, -68.1], 12); // Coordenadas ejemplo: La Paz
+
+      L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+        maxZoom: 19,
+        attribution: '© OpenStreetMap'
+      }).addTo(window.map);
+
+      // Ejemplo de nodos de fibra óptica
+      const nodosFTTH = [
+        { name: "Nodo 1", coords: [-16.5, -68.1] },
+        { name: "Nodo 2", coords: [-16.52, -68.12] },
+        { name: "Nodo 3", coords: [-16.48, -68.08] },
+        { name: "Cliente A", coords: [-16.51, -68.11] },
+        { name: "Cliente B", coords: [-16.49, -68.09] },
+      ];
+
+      nodosFTTH.forEach((nodo) => {
+        L.marker(nodo.coords)
+          .addTo(window.map)
+          .bindPopup(`<b>${nodo.name}</b><br>Fibra óptica FTTH`);
+      });
+    }
+  </script>
 </body>
 </html>

@@ -1,32 +1,40 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Mapa FTTH con Ruta en calles</title>
+  <title>Mapa FTTH con Ruta por Calles</title>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
+  
+  <!-- Leaflet CSS -->
   <link
     rel="stylesheet"
     href="https://unpkg.com/leaflet/dist/leaflet.css"
   />
+  <!-- Leaflet Routing Machine CSS -->
   <link
     rel="stylesheet"
     href="https://unpkg.com/leaflet-routing-machine/dist/leaflet-routing-machine.css"
   />
+  
   <style>
     #map {
       height: 100vh;
       width: 100%;
+      margin: 0;
+      padding: 0;
     }
   </style>
 </head>
 <body>
   <div id="map"></div>
 
+  <!-- Leaflet JS -->
   <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+  <!-- Leaflet Routing Machine JS -->
   <script src="https://unpkg.com/leaflet-routing-machine/dist/leaflet-routing-machine.js"></script>
 
   <script>
-    // Crear mapa centrado en Nodo Tunari
+    // Inicializar mapa centrado en Nodo Tunari
     const map = L.map("map").setView([-17.3949, -66.1568], 14);
 
     // Capa base OpenStreetMap
@@ -35,8 +43,10 @@
       maxZoom: 19,
     }).addTo(map);
 
-    // Nodo Tunari (punto fijo)
+    // Coordenadas del nodo fijo
     const nodoCoords = [-17.3949, -66.1568];
+
+    // Marcador Nodo Tunari
     const nodoMarker = L.marker(nodoCoords).addTo(map);
     nodoMarker.bindPopup(`
       <strong>NODO TUNARI</strong><br/>
@@ -46,30 +56,31 @@
 
     let routingControl = null;
 
-    // Al hacer clic en el mapa, calcula ruta desde nodo hasta clic
+    // Evento click: calcular ruta real con ajuste automático a calles
     map.on("click", function (e) {
       const destino = e.latlng;
 
-      // Eliminar ruta anterior
+      // Si ya hay ruta anterior, eliminarla
       if (routingControl) {
         map.removeControl(routingControl);
       }
 
-      // Crear control de ruta
+      // Crear nuevo control de ruta con OSRM
       routingControl = L.Routing.control({
         waypoints: [L.latLng(nodoCoords), destino],
         routeWhileDragging: false,
         showAlternatives: false,
+        router: L.Routing.osrmv1({
+          serviceUrl: 'https://router.project-osrm.org/route/v1'
+        }),
         lineOptions: {
           styles: [{ color: "blue", opacity: 0.7, weight: 5 }],
         },
         createMarker: function(i, wp) {
           if (i === 0) {
-            // Marcador inicial (Nodo)
             return L.marker(wp.latLng).bindPopup("Nodo Tunari");
           } else {
-            // Marcador destino
-            return L.marker(wp.latLng).bindPopup("Destino");
+            return L.marker(wp.latLng).bindPopup("Destino (ajustado a calle)");
           }
         }
       }).addTo(map);

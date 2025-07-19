@@ -1,90 +1,76 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Mapa FTTH con Ruta por Calles</title>
+  <title>Mapa FTTH - Ruta Manual</title>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  
-  <!-- Leaflet CSS -->
   <link
     rel="stylesheet"
     href="https://unpkg.com/leaflet/dist/leaflet.css"
   />
-  <!-- Leaflet Routing Machine CSS -->
-  <link
-    rel="stylesheet"
-    href="https://unpkg.com/leaflet-routing-machine/dist/leaflet-routing-machine.css"
-  />
-  
   <style>
     #map {
       height: 100vh;
       width: 100%;
-      margin: 0;
-      padding: 0;
+      margin: 0; padding: 0;
+    }
+    #info {
+      position: absolute;
+      top: 10px; left: 50%;
+      transform: translateX(-50%);
+      background: white;
+      padding: 6px 12px;
+      font-family: Arial, sans-serif;
+      font-size: 14px;
+      border-radius: 4px;
+      box-shadow: 0 0 5px rgba(0,0,0,0.3);
+      z-index: 1000;
     }
   </style>
 </head>
 <body>
+  <div id="info">Haz clic para agregar puntos y trazar la ruta.</div>
   <div id="map"></div>
 
-  <!-- Leaflet JS -->
   <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
-  <!-- Leaflet Routing Machine JS -->
-  <script src="https://unpkg.com/leaflet-routing-machine/dist/leaflet-routing-machine.js"></script>
 
   <script>
-    // Inicializar mapa centrado en Nodo Tunari
-    const map = L.map("map").setView([-17.3949, -66.1568], 14);
+    const map = L.map('map').setView([-17.3949, -66.1568], 14);
 
-    // Capa base OpenStreetMap
-    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-      attribution: "© OpenStreetMap contributors",
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '© OpenStreetMap contributors',
       maxZoom: 19,
     }).addTo(map);
 
-    // Coordenadas del nodo fijo
+    let puntos = [];
+    let polyline = null;
+
+    // Marcador inicial Nodo Tunari
     const nodoCoords = [-17.3949, -66.1568];
-
-    // Marcador Nodo Tunari
     const nodoMarker = L.marker(nodoCoords).addTo(map);
-    nodoMarker.bindPopup(`
-      <strong>NODO TUNARI</strong><br/>
-      VER LOS PLANES<br/>
-      Contacto: 77445566
-    `).openPopup();
+    nodoMarker.bindPopup("<b>NODO TUNARI</b><br>VER LOS PLANES<br>Contacto: 77445566").openPopup();
 
-    let routingControl = null;
-
-    // Evento click: calcular ruta real con ajuste automático a calles
-    map.on("click", function (e) {
-      const destino = e.latlng;
-
-      // Si ya hay ruta anterior, eliminarla
-      if (routingControl) {
-        map.removeControl(routingControl);
+    function actualizarRuta() {
+      if (polyline) {
+        map.removeLayer(polyline);
       }
+      polyline = L.polyline(puntos, { color: 'red', weight: 4 }).addTo(map);
+      // Calcular distancia total
+      let distanciaTotal = 0;
+      for(let i=0; i < puntos.length-1; i++) {
+        distanciaTotal += map.distance(puntos[i], puntos[i+1]);
+      }
+      document.getElementById('info').innerHTML = `Distancia total: ${(distanciaTotal/1000).toFixed(3)} km`;
+    }
 
-      // Crear nuevo control de ruta con OSRM
-      routingControl = L.Routing.control({
-        waypoints: [L.latLng(nodoCoords), destino],
-        routeWhileDragging: false,
-        showAlternatives: false,
-        router: L.Routing.osrmv1({
-          serviceUrl: 'https://router.project-osrm.org/route/v1'
-        }),
-        lineOptions: {
-          styles: [{ color: "blue", opacity: 0.7, weight: 5 }],
-        },
-        createMarker: function(i, wp) {
-          if (i === 0) {
-            return L.marker(wp.latLng).bindPopup("Nodo Tunari");
-          } else {
-            return L.marker(wp.latLng).bindPopup("Destino (ajustado a calle)");
-          }
-        }
-      }).addTo(map);
+    map.on('click', function(e) {
+      puntos.push(e.latlng);
+      L.marker(e.latlng).addTo(map);
+      actualizarRuta();
     });
+
+    // Empezar la ruta desde Nodo Tunari automáticamente si quieres:
+    puntos.push(L.latLng(nodoCoords));
   </script>
 </body>
 </html>

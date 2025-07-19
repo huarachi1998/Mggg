@@ -1,41 +1,33 @@
 <!DOCTYPE html>
 <html>
-<head>
-  <meta charset="utf-8">
-  <title>Mapa Meganet Huar</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link
-    rel="stylesheet"
-    href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-  />
-  <style>
-    #map { height: 100vh; margin: 0; padding: 0; }
-  </style>
-</head>
-<body>
-  <div id="map"></div>
+  <head>
+    <title>Mapa con Etiquetas</title>
+    <script src="https://maps.googleapis.com/maps/api/js?key=TU_API_KEY"></script>
+    <script>
+      function initMap() {
+        const map = new google.maps.Map(document.getElementById("map"), {
+          zoom: 13,
+          center: { lat: -16.5, lng: -68.15 }, // Ajusta si es necesario
+        });
 
-  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-  <script src="https://unpkg.com/leaflet-omnivore@0.3/leaflet-omnivore.min.js"></script>
-  <script>
-    const map = L.map('map').setView([-17.7833, -63.1821], 13);
+        map.data.loadGeoJson("marcadores.geojson");
 
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      attribution: '© OpenStreetMap contributors'
-    }).addTo(map);
-
-    omnivore.kml('doc.kml')
-  .on('ready', function() {
-    const layer = this;
-    layer.eachLayer(function(marker) {
-      const name = marker.feature?.properties?.name;
-      if (name) {
-        marker.bindTooltip(name, {permanent: true, direction: 'top'}).openTooltip();
+        // Mostrar etiqueta al hacer clic
+        map.data.addListener("click", function(event) {
+          const nombre = event.feature.getProperty("name"); // o "title"
+          const infowindow = new google.maps.InfoWindow({
+            content: nombre,
+            position: event.latLng,
+          });
+          infowindow.open(map);
+        });
       }
-    });
-    map.fitBounds(layer.getBounds());
-  })
-  .addTo(map);
-  </script>
-</body>
+    </script>
+    <style>
+      #map { height: 100vh; width: 100%; }
+    </style>
+  </head>
+  <body onload="initMap()">
+    <div id="map"></div>
+  </body>
 </html>

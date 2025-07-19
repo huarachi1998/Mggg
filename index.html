@@ -3,18 +3,24 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Login con Animación</title>
+  <title>Login y Dashboard con Iconos</title>
   <style>
+    /* Reset y base */
+    * {
+      box-sizing: border-box;
+    }
     body, html {
       margin: 0; padding: 0; height: 100%;
-      font-family: Arial, sans-serif;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
       background: linear-gradient(135deg, #4a90e2, #9013fe);
       display: flex;
       justify-content: center;
       align-items: center;
       overflow: hidden;
+      color: #333;
     }
 
+    /* Contenedor login */
     #login-box {
       background: white;
       padding: 2.5rem 3rem;
@@ -25,6 +31,7 @@
       opacity: 0;
       transform: translateY(-30px);
       animation: slideFadeIn 0.8s forwards;
+      z-index: 10;
     }
 
     @keyframes slideFadeIn {
@@ -78,10 +85,16 @@
       display: none;
     }
 
-    #map {
+    /* Dashboard */
+    #dashboard {
+      display: none;
       height: 100vh;
       width: 100vw;
-      display: none;
+      background: #f5f5f5;
+      padding: 30px;
+      box-sizing: border-box;
+      overflow-y: auto;
+      text-align: center;
     }
 
     #logout-btn {
@@ -95,24 +108,55 @@
       border-radius: 6px;
       font-weight: 700;
       cursor: pointer;
-      display: none;
       box-shadow: 0 4px 10px rgba(217,48,37,0.7);
-      z-index: 1000;
+      z-index: 10;
     }
     #logout-btn:hover {
       background: #a8221b;
     }
-  </style>
 
-  <!-- Leaflet CSS -->
-  <link
-    rel="stylesheet"
-    href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-    crossorigin=""
-  />
+    /* Contenedor iconos */
+    .icons-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fit,minmax(150px,1fr));
+      gap: 30px;
+      max-width: 900px;
+      margin: 0 auto;
+      padding-top: 50px;
+    }
+
+    .icon-card {
+      background: white;
+      border-radius: 20px;
+      padding: 30px 20px;
+      box-shadow: 0 6px 15px rgba(0,0,0,0.1);
+      cursor: pointer;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      user-select: none;
+    }
+    .icon-card:hover {
+      transform: translateY(-10px);
+      box-shadow: 0 12px 30px rgba(0,0,0,0.15);
+    }
+
+    /* Iconos grandes (SVG inline o emoji) */
+    .icon-svg {
+      font-size: 70px;
+      margin-bottom: 15px;
+      color: #4a90e2;
+    }
+
+    /* Títulos */
+    .icon-title {
+      font-size: 22px;
+      font-weight: 700;
+      color: #333;
+    }
+  </style>
 </head>
 <body>
 
+  <!-- LOGIN -->
   <div id="login-box">
     <h2>Iniciar Sesión</h2>
     <input type="text" id="username" placeholder="Usuario" autocomplete="username" />
@@ -121,14 +165,33 @@
     <p id="error-msg">Usuario o contraseña incorrectos</p>
   </div>
 
-  <button id="logout-btn" onclick="logout()">Cerrar sesión</button>
-  <div id="map"></div>
-
-  <!-- Leaflet JS -->
-  <script
-    src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
-    crossorigin=""
-  ></script>
+  <!-- DASHBOARD -->
+  <div id="dashboard">
+    <button id="logout-btn" onclick="logout()">Cerrar sesión</button>
+    <h1>Panel de Control</h1>
+    <div class="icons-container">
+      <div class="icon-card" onclick="openURL('https://maps.example.com')">
+        <div class="icon-svg">🗺️</div>
+        <div class="icon-title">Mapa</div>
+      </div>
+      <div class="icon-card" onclick="openURL('https://vpn.example.com')">
+        <div class="icon-svg">🔒</div>
+        <div class="icon-title">VPN</div>
+      </div>
+      <div class="icon-card" onclick="openURL('https://programa.example.com')">
+        <div class="icon-svg">💻</div>
+        <div class="icon-title">Programa</div>
+      </div>
+      <div class="icon-card" onclick="openURL('https://admin.example.com')">
+        <div class="icon-svg">🛠️</div>
+        <div class="icon-title">Admin</div>
+      </div>
+      <div class="icon-card" onclick="openURL('https://olt.example.com')">
+        <div class="icon-svg">📡</div>
+        <div class="icon-title">OLT</div>
+      </div>
+    </div>
+  </div>
 
   <script>
     const validUser = "admin";
@@ -136,58 +199,31 @@
 
     const loginBox = document.getElementById("login-box");
     const errorMsg = document.getElementById("error-msg");
-    const mapDiv = document.getElementById("map");
-    const logoutBtn = document.getElementById("logout-btn");
+    const dashboard = document.getElementById("dashboard");
 
     function login() {
       const user = document.getElementById("username").value.trim();
       const pass = document.getElementById("password").value.trim();
 
-      if (user === validUser && pass === validPass) {
+      if(user === validUser && pass === validPass) {
         errorMsg.style.display = "none";
         loginBox.style.display = "none";
-        logoutBtn.style.display = "block";
-        mapDiv.style.display = "block";
-        initMap();
+        dashboard.style.display = "block";
       } else {
         errorMsg.style.display = "block";
       }
     }
 
     function logout() {
+      dashboard.style.display = "none";
       loginBox.style.display = "block";
-      mapDiv.style.display = "none";
-      logoutBtn.style.display = "none";
       errorMsg.style.display = "none";
       document.getElementById("username").value = "";
       document.getElementById("password").value = "";
     }
 
-    function initMap() {
-      if (window.map) return; // evitar reiniciar
-
-      window.map = L.map("map").setView([-16.5, -68.1], 12);
-
-      L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-        maxZoom: 19,
-        attribution: "© OpenStreetMap",
-      }).addTo(window.map);
-
-      const puntosFTTH = [
-        { name: "Nodo Tunari", subtitle: "OLT C300", description: "Caja NAP C2X3 Susucubambi", coords: [-16.5, -68.1] },
-        { name: "Nodo Tunari", subtitle: "OLT C300", description: "Caja NAP C2X3 Susucubambi", coords: [-16.52, -68.12] },
-        { name: "Nodo Tunari", subtitle: "OLT C300", description: "Caja NAP C2X3 Susucubambi", coords: [-16.48, -68.08] },
-      ];
-
-      puntosFTTH.forEach(({ name, subtitle, description, coords }) => {
-        L.marker(coords)
-          .addTo(window.map)
-          .bindPopup(`
-            <div style="font-weight:bold; color:#1e90ff; font-size:18px;">${name}</div>
-            <div style="color:#ff4500; font-style:italic; font-size:16px;">${subtitle}</div>
-            <div style="color:#32cd32; font-size:14px;">${description}</div>
-          `);
-      });
+    function openURL(url) {
+      window.open(url, "_blank");
     }
   </script>
 

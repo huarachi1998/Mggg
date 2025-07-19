@@ -1,7 +1,8 @@
+
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Mapa FTTH - Ruta Manual con Iconos</title>
+  <title>Mapa FTTH Satelital</title>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <link
@@ -9,10 +10,11 @@
     href="https://unpkg.com/leaflet/dist/leaflet.css"
   />
   <style>
-    #map { height: 100vh; margin: 0; padding: 0; }
+    #map { height: 100vh; width: 100%; }
     #info {
       position: absolute;
-      top: 10px; left: 50%;
+      top: 10px;
+      left: 50%;
       transform: translateX(-50%);
       background: white;
       padding: 6px 12px;
@@ -29,27 +31,33 @@
   <div id="map"></div>
 
   <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+  <script src="https://unpkg.com/leaflet-providers"></script>
 
   <script>
-    const map = L.map('map').setView([-17.3949, -66.1568], 14);
+    const map = L.map('map').setView([-17.3949, -66.1568], 17);
 
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      attribution: '© OpenStreetMap contributors',
-      maxZoom: 19,
-    }).addTo(map);
+    // Mapa satelital de Esri
+    L.tileLayer.provider('Esri.WorldImagery').addTo(map);
+
+    // Icono del nodo principal (ej: edificio o armario)
+    const iconoNodo = L.icon({
+      iconUrl: 'https://cdn-icons-png.flaticon.com/512/684/684908.png',
+      iconSize: [32, 32],
+      iconAnchor: [16, 32],
+      popupAnchor: [0, -28],
+    });
+
+    // Icono para puntos de medición (postes u otros)
+    const iconoPunto = L.icon({
+      iconUrl: 'https://cdn-icons-png.flaticon.com/512/252/252025.png',
+      iconSize: [25, 25],
+      iconAnchor: [12, 25],
+    });
 
     const nodoCoords = [-17.3949, -66.1568];
 
-    // Icono personalizado para puntos
-    const iconoPoste = L.icon({
-      iconUrl: 'https://cdn-icons-png.flaticon.com/512/684/684908.png',
-      iconSize: [25, 25],
-      iconAnchor: [12, 25],
-      popupAnchor: [0, -20],
-    });
-
-    // Nodo Tunari fijo
-    const nodoMarker = L.marker(nodoCoords, { icon: iconoPoste }).addTo(map);
+    // Nodo fijo
+    const nodoMarker = L.marker(nodoCoords, { icon: iconoNodo }).addTo(map);
     nodoMarker.bindPopup("<b>NODO TUNARI</b><br>VER LOS PLANES<br>Contacto: 77445566").openPopup();
 
     let puntos = [L.latLng(nodoCoords)];
@@ -58,27 +66,30 @@
 
     function actualizarRuta() {
       if (polyline) map.removeLayer(polyline);
-      polyline = L.polyline(puntos, { color: 'red', weight: 4 }).addTo(map);
+      polyline = L.polyline(puntos, { color: 'lime', weight: 4 }).addTo(map);
 
       let distanciaTotal = 0;
       for (let i = 0; i < puntos.length - 1; i++) {
         distanciaTotal += map.distance(puntos[i], puntos[i + 1]);
       }
-      document.getElementById('info').innerHTML =
+
+      document.getElementById('info').innerText =
         `Haz clic para agregar o quitar puntos. Distancia total: ${(distanciaTotal / 1000).toFixed(3)} km`;
     }
 
     function agregarPunto(latlng) {
-      const marker = L.marker(latlng, { icon: iconoPoste }).addTo(map);
+      const marker = L.marker(latlng, { icon: iconoPunto }).addTo(map);
+
       marker.on('click', function () {
         const index = markers.indexOf(marker);
-        if (index > 0) { // No borrar el nodo inicial
+        if (index > 0) {
           map.removeLayer(marker);
           markers.splice(index, 1);
           puntos.splice(index, 1);
           actualizarRuta();
         }
       });
+
       markers.push(marker);
       puntos.push(latlng);
       actualizarRuta();
@@ -88,7 +99,7 @@
       agregarPunto(e.latlng);
     });
 
-    actualizarRuta(); // Dibuja línea desde el inicio
+    actualizarRuta(); // Ruta inicial con el nodo
   </script>
 </body>
 </html>

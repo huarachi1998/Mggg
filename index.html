@@ -2,92 +2,106 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>MegaFibra | Internet Fibra Óptica</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>MegaFibra | Conexión que te mira</title>
   <style>
-    body {margin:0;font-family:Segoe UI,sans-serif;background:#f4f4f4;color:#333;}
-    header{background:#0047ab;color:white;padding:1rem 2rem;display:flex;justify-content:space-between;align-items:center;}
-    nav a{color:white;margin-left:1rem;text-decoration:none;font-weight:bold;}
-    .hero{background:url('https://images.unsplash.com/photo-1581091012184-5c3b0f9c4e47?auto=format&fit=crop&w=1470&q=80') no-repeat center/cover;color:white;padding:6rem 2rem;text-align:center;}
-    .hero h2{font-size:2.5rem;margin:0;}
-    .hero p{font-size:1.2rem;margin-top:1rem;}
-    .btn{background:#ff8c00;color:white;padding:.8rem 1.5rem;margin-top:1.5rem;display:inline-block;border:none;font-weight:bold;border-radius:5px;cursor:pointer;text-decoration:none;}
-    section{padding:3rem 2rem;max-width:1100px;margin:auto;}
-    .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:2rem;}
-    .card{background:white;padding:1.5rem;border-radius:10px;box-shadow:0 0 10px rgba(0,0,0,0.1);}
-    .gallery{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-top:1rem;}
-    .gallery img{width:100%;height:auto;border-radius:8px;object-fit:cover;}
-    footer{background:#222;color:#ccc;text-align:center;padding:2rem 1rem;}
-    footer a{color:#ff8c00;margin:0 .5rem;text-decoration:none;}
-    @media(max-width:600px){ .gallery{grid-template-columns:1fr;} }
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #e0f2ff;
+      color: #004080;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+    header {
+      background: #004080;
+      color: white;
+      padding: 1rem 2rem;
+      text-align: center;
+    }
+    header h1 {
+      margin: 0;
+      font-weight: 700;
+    }
+    main {
+      flex: 1;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 2rem;
+      gap: 2rem;
+      flex-wrap: wrap;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    .text-section {
+      max-width: 500px;
+    }
+    h2 {
+      font-size: 2.5rem;
+      margin-bottom: 1rem;
+    }
+    p {
+      font-size: 1.2rem;
+      line-height: 1.5;
+    }
+    .btn {
+      display: inline-block;
+      margin-top: 1.5rem;
+      padding: 0.8rem 1.8rem;
+      background-color: #ff8c00;
+      color: white;
+      font-weight: bold;
+      border-radius: 5px;
+      text-decoration: none;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+    .btn:hover {
+      background-color: #e67e00;
+    }
+    .face-svg {
+      width: 300px;
+      height: 300px;
+      filter: drop-shadow(2px 4px 6px rgba(0,0,0,0.2));
+    }
+    footer {
+      background: #004080;
+      color: white;
+      text-align: center;
+      padding: 1rem;
+      font-size: 0.9rem;
+    }
   </style>
 </head>
 <body>
 
 <header>
   <h1>MegaFibra</h1>
-  <nav>
-    <a href="#servicios">Servicios</a>
-    <a href="#cobertura">Cobertura</a>
-    <a href="#planes">Planes</a>
-    <a href="#contacto">Contacto</a>
-  </nav>
 </header>
 
-<div class="hero">
-  <h2>Internet ultra‑rápido por fibra óptica</h2>
-  <p>Conexión estable, sin interrupciones, perfecta para hogar o empresa.</p>
-  <a href="#planes" class="btn">Ver Planes</a>
-</div>
-
-<section id="servicios">
-  <h2>Servicios</h2>
-  <div class="grid">
-    <div class="card">
-      <h3>Internet Hogar</h3>
-      <p>Streaming, gaming y teletrabajo sin cortes.</p>
-    </div>
-    <div class="card">
-      <h3>Internet Corporativo</h3>
-      <p>Alta velocidad y soporte dedicado para tu negocio.</p>
-    </div>
-    <div class="card">
-      <h3>Instalación Rápida</h3>
-      <p>En menos de 24 h, con garantía incluida.</p>
-    </div>
+<main>
+  <div class="text-section">
+    <h2>La conexión que te mira y entiende</h2>
+    <p>Con MegaFibra, disfruta internet rápido, confiable y sin interrupciones. Perfecto para hogares y empresas que necesitan estar siempre conectados.</p>
+    <a href="#contacto" class="btn">Contacta con nosotros</a>
   </div>
-  <div class="gallery">
-    <img src="https://via.placeholder.com/600x400?text=Conexión+en+poste" alt="Conexión en poste">
-    <img src="https://via.placeholder.com/600x400?text=Técnico+instalando+ONT" alt="Técnico instalando ONT">
-    <img src="https://via.placeholder.com/600x400?text=Caja+de+terminación+Óptica" alt="Caja termina fibra">
-    <img src="https://via.placeholder.com/600x400?text=Cable+enterrado+de+fibra" alt="Cable enterrado fibra">
-  </div>
-</section>
 
-<section id="cobertura">
-  <h2>Zona de Cobertura</h2>
-  <p>Estamos en más de 30 zonas urbanas y rurales, y seguimos ampliando.</p>
-</section>
-
-<section id="planes">
-  <h2>Planes</h2>
-  <div class="grid">
-    <div class="card"><h3>Básico</h3><p>30 Mbps • Bs. 120/mes</p></div>
-    <div class="card"><h3>Familiar</h3><p>80 Mbps • Bs. 180/mes</p></div>
-    <div class="card"><h3>Pro</h3><p>150 Mbps • Bs. 250/mes</p></div>
-  </div>
-</section>
-
-<section id="contacto">
-  <h2>Contacto</h2>
-  <p>📞 WhatsApp: <a href="https://wa.me/59171234567" target="_blank">+591 71234567</a></p>
-  <p>📧 Correo: info@megafibra.bo</p>
-  <p>📍 Calle Ejemplo 123, La Paz, Bolivia</p>
-</section>
+  <!-- SVG de cara mirando hacia la derecha -->
+  <svg class="face-svg" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Cara mirando a la derecha">
+    <circle cx="100" cy="100" r="90" fill="#ffcc99" stroke="#cc9966" stroke-width="4"/>
+    <circle cx="65" cy="85" r="20" fill="white"/>
+    <circle cx="70" cy="85" r="10" fill="#004080"/>
+    <circle cx="130" cy="85" r="20" fill="white"/>
+    <circle cx="125" cy="85" r="10" fill="#004080"/>
+    <path d="M 70 130 Q 100 160 130 130" stroke="#cc9966" stroke-width="5" fill="none" stroke-linecap="round"/>
+    <path d="M 50 120 Q 40 100 50 80" stroke="#cc9966" stroke-width="6" fill="none" stroke-linecap="round"/>
+  </svg>
+</main>
 
 <footer>
-  <p>&copy; 2025 MegaFibra. Todos los derechos reservados.</p>
-  <p><a href="#">Facebook</a> | <a href="#">Instagram</a> | <a href="#">TikTok</a></p>
+  &copy; 2025 MegaFibra - Internet por fibra óptica. Todos los derechos reservados.
 </footer>
 
 </body>

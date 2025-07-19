@@ -1,85 +1,113 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Gusano con texto "chispas poto"</title>
-<style>
-  body, html {
-    margin: 0; padding: 0; height: 100vh; background: #000;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    overflow: hidden;
-    font-family: monospace;
-    color: #0f0;
-  }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Gusano atrapa letra</title>
+  <style>
+    body, html {
+      margin: 0; padding: 0; height: 100vh;
+      background: #000; overflow: hidden;
+      font-family: monospace;
+      color: #0f0;
+    }
 
-  #game-area {
-    position: relative;
-    width: 600px;
-    height: 300px;
-    background: #111;
-    border: 3px solid #0f0;
-    border-radius: 10px;
-  }
+    #game-area {
+      position: relative;
+      width: 100vw;
+      height: 100vh;
+      background: #111;
+    }
 
-  .segment {
-    position: absolute;
-    width: 20px;
-    height: 20px;
-    background: #0f0;
-    border-radius: 10px;
-    box-shadow: 0 0 8px #0f0;
-  }
+    .segment {
+      position: absolute;
+      width: 20px;
+      height: 20px;
+      background: #0f0;
+      border-radius: 10px;
+      box-shadow: 0 0 8px #0f0;
+    }
 
-  #text {
-    position: absolute;
-    font-size: 24px;
-    font-weight: bold;
-    color: #0f0;
-    text-shadow:
-      0 0 8px #0f0,
-      0 0 16px #0f0;
-    user-select: none;
-    pointer-events: none;
-  }
-</style>
+    #target-letter {
+      position: absolute;
+      font-size: 36px;
+      font-weight: bold;
+      color: red;
+      text-shadow: 0 0 6px red;
+      pointer-events: none;
+    }
+
+    #text {
+      position: absolute;
+      font-size: 20px;
+      font-weight: bold;
+      color: #0f0;
+      text-shadow: 0 0 8px #0f0;
+      pointer-events: none;
+    }
+
+    #alert {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%) scale(0);
+      font-size: 48px;
+      font-weight: bold;
+      color: yellow;
+      text-shadow: 0 0 12px red, 0 0 24px red;
+      background: rgba(0,0,0,0.7);
+      padding: 20px 40px;
+      border-radius: 12px;
+      transition: transform 0.3s ease;
+      z-index: 1000;
+    }
+
+    #alert.show {
+      transform: translate(-50%, -50%) scale(1);
+    }
+  </style>
 </head>
 <body>
 
 <div id="game-area">
   <div id="text">chispas poto</div>
+  <div id="target-letter">A</div>
+  <div id="alert">¡NO ME TOQUES, POTO!</div>
 </div>
 
 <script>
   const gameArea = document.getElementById('game-area');
   const text = document.getElementById('text');
+  const letter = document.getElementById('target-letter');
+  const alertBox = document.getElementById('alert');
 
   const segmentSize = 20;
-  const totalSegments = 10; // longitud de la serpiente
+  const totalSegments = 10;
 
   // Crear segmentos del gusano
   const segments = [];
-  for(let i = 0; i < totalSegments; i++) {
+  for (let i = 0; i < totalSegments; i++) {
     const seg = document.createElement('div');
     seg.classList.add('segment');
     gameArea.appendChild(seg);
-    segments.push({el: seg, x: 0, y: 0});
+    segments.push({ el: seg, x: 0, y: 0 });
   }
 
-  // Estado de la serpiente
   let headX = 0;
-  let headY = gameArea.clientHeight / 2 - segmentSize/2;
+  let headY = gameArea.clientHeight / 2 - segmentSize / 2;
+  let speedX = 2;
+  let direction = 1;
 
-  let speedX = 1; // velocidad horizontal (px por frame)
-  let direction = 1; // 1 = derecha, -1 = izquierda
+  // Posición de la letra flotante
+  let letterX = 300;
+  let letterY = 200;
+  letter.style.left = letterX + 'px';
+  letter.style.top = letterY + 'px';
 
   function update() {
     // Mover cabeza
     headX += speedX * direction;
 
-    // Rebotar en los bordes
     if (headX > gameArea.clientWidth - segmentSize) {
       direction = -1;
       headX = gameArea.clientWidth - segmentSize;
@@ -88,35 +116,55 @@
       headX = 0;
     }
 
-    // Mover segmentos - el cuerpo sigue a la cabeza
-    // Cada segmento toma la posición del anterior con un retraso
-    for(let i = segments.length -1; i > 0; i--) {
-      segments[i].x = segments[i-1].x;
-      segments[i].y = segments[i-1].y;
+    // Oscilar suavemente verticalmente
+    headY = gameArea.clientHeight / 2 + 60 * Math.sin(headX / 80);
+
+    // Mover cuerpo
+    for (let i = segments.length - 1; i > 0; i--) {
+      segments[i].x = segments[i - 1].x;
+      segments[i].y = segments[i - 1].y;
     }
     segments[0].x = headX;
     segments[0].y = headY;
 
-    // Actualizar posiciones en DOM
     segments.forEach(seg => {
       seg.el.style.left = seg.x + 'px';
       seg.el.style.top = seg.y + 'px';
     });
 
-    // Colocar texto justo después de la última sección del cuerpo
-    const lastSeg = segments[segments.length -1];
-    text.style.left = (lastSeg.x + segmentSize + 10) + 'px';
-    text.style.top = (lastSeg.y + segmentSize/2 - text.clientHeight/2) + 'px';
+    // Seguir el texto
+    const last = segments[segments.length - 1];
+    text.style.left = (last.x + 30) + 'px';
+    text.style.top = (last.y) + 'px';
+
+    // Detectar colisión con letra
+    const dx = segments[0].x - letterX;
+    const dy = segments[0].y - letterY;
+    const dist = Math.sqrt(dx * dx + dy * dy);
+
+    if (dist < 25) {
+      showAlert();
+      relocateLetter();
+    }
 
     requestAnimationFrame(update);
   }
 
-  update();
+  function showAlert() {
+    alertBox.classList.add('show');
+    setTimeout(() => {
+      alertBox.classList.remove('show');
+    }, 2000);
+  }
 
-  // Actualizar al cambiar tamaño ventana
-  window.addEventListener('resize', () => {
-    headY = gameArea.clientHeight / 2 - segmentSize/2;
-  });
+  function relocateLetter() {
+    letterX = Math.random() * (gameArea.clientWidth - 50);
+    letterY = Math.random() * (gameArea.clientHeight - 50);
+    letter.style.left = letterX + 'px';
+    letter.style.top = letterY + 'px';
+  }
+
+  update();
 </script>
 
 </body>

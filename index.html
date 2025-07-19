@@ -1,11 +1,17 @@
 <!DOCTYPE html>
 <html>
 <head>
+  <title>Mapa FTTH con Ruta en calles</title>
   <meta charset="utf-8" />
-  <title>Mapa FTTH - Meganet</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <!-- Estilos de Leaflet -->
-  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link
+    rel="stylesheet"
+    href="https://unpkg.com/leaflet/dist/leaflet.css"
+  />
+  <link
+    rel="stylesheet"
+    href="https://unpkg.com/leaflet-routing-machine/dist/leaflet-routing-machine.css"
+  />
   <style>
     #map {
       height: 100vh;
@@ -14,50 +20,59 @@
   </style>
 </head>
 <body>
-  <!-- Contenedor del mapa -->
   <div id="map"></div>
 
-  <!-- Scripts de Leaflet -->
   <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+  <script src="https://unpkg.com/leaflet-routing-machine/dist/leaflet-routing-machine.js"></script>
 
   <script>
-    const map = L.map('map').setView([-17.3949, -66.1568], 14);
+    // Crear mapa centrado en Nodo Tunari
+    const map = L.map("map").setView([-17.3949, -66.1568], 14);
 
-    // Capa base
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    // Capa base OpenStreetMap
+    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+      attribution: "© OpenStreetMap contributors",
       maxZoom: 19,
-      attribution: '© OpenStreetMap contributors'
     }).addTo(map);
 
-    // 📍 Nodo fijo (Nodo Tunari)
+    // Nodo Tunari (punto fijo)
     const nodoCoords = [-17.3949, -66.1568];
-    const nodo = L.marker(nodoCoords).addTo(map);
-    nodo.bindPopup(`
-      <strong>NODO TUNARI</strong><br>
-      VER LOS PLANES<br>
+    const nodoMarker = L.marker(nodoCoords).addTo(map);
+    nodoMarker.bindPopup(`
+      <strong>NODO TUNARI</strong><br/>
+      VER LOS PLANES<br/>
       Contacto: 77445566
     `).openPopup();
 
-    let linea = null;
+    let routingControl = null;
 
-    // 🔍 Medir desde el nodo al punto que se haga clic
-    map.on('click', function (e) {
+    // Al hacer clic en el mapa, calcula ruta desde nodo hasta clic
+    map.on("click", function (e) {
       const destino = e.latlng;
 
-      // Borrar línea anterior
-      if (linea) {
-        map.removeLayer(linea);
+      // Eliminar ruta anterior
+      if (routingControl) {
+        map.removeControl(routingControl);
       }
 
-      // Dibujar línea nueva
-      linea = L.polyline([nodoCoords, [destino.lat, destino.lng]], {
-        color: 'blue',
-        weight: 3
+      // Crear control de ruta
+      routingControl = L.Routing.control({
+        waypoints: [L.latLng(nodoCoords), destino],
+        routeWhileDragging: false,
+        showAlternatives: false,
+        lineOptions: {
+          styles: [{ color: "blue", opacity: 0.7, weight: 5 }],
+        },
+        createMarker: function(i, wp) {
+          if (i === 0) {
+            // Marcador inicial (Nodo)
+            return L.marker(wp.latLng).bindPopup("Nodo Tunari");
+          } else {
+            // Marcador destino
+            return L.marker(wp.latLng).bindPopup("Destino");
+          }
+        }
       }).addTo(map);
-
-      // Calcular y mostrar distancia
-      const distancia = map.distance(nodoCoords, destino);
-      alert(`Distancia desde el nodo: ${(distancia / 1000).toFixed(3)} km`);
     });
   </script>
 </body>

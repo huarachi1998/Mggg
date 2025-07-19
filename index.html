@@ -1,14 +1,10 @@
-
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Mapa FTTH Satelital</title>
+  <title>Mapa FTTH con Rutas por Calles</title>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <link
-    rel="stylesheet"
-    href="https://unpkg.com/leaflet/dist/leaflet.css"
-  />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
   <style>
     #map { height: 100vh; width: 100%; }
     #info {
@@ -27,19 +23,23 @@
   </style>
 </head>
 <body>
-  <div id="info">Haz clic para agregar o quitar puntos. Distancia total: 0 km</div>
+  <div id="info">Haz clic para calcular ruta desde el Nodo Tunari</div>
   <div id="map"></div>
 
   <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
-  <script src="https://unpkg.com/leaflet-providers"></script>
+  <script src="https://unpkg.com/leaflet-routing-machine/dist/leaflet-routing-machine.min.js"></script>
 
   <script>
-    const map = L.map('map').setView([-17.3949, -66.1568], 17);
+    const nodoCoords = [-17.3949, -66.1568];
+    const map = L.map('map').setView(nodoCoords, 17);
 
-    // Mapa satelital de Esri
-    L.tileLayer.provider('Esri.WorldImagery').addTo(map);
+    // Mapa satelital
+    L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+      maxZoom: 19,
+      attribution: 'Esri &mdash; Imagery'
+    }).addTo(map);
 
-    // Icono del nodo principal (ej: edificio o armario)
+    // Icono del nodo
     const iconoNodo = L.icon({
       iconUrl: 'https://cdn-icons-png.flaticon.com/512/684/684908.png',
       iconSize: [32, 32],
@@ -47,59 +47,35 @@
       popupAnchor: [0, -28],
     });
 
-    // Icono para puntos de medición (postes u otros)
-    const iconoPunto = L.icon({
-      iconUrl: 'https://cdn-icons-png.flaticon.com/512/252/252025.png',
-      iconSize: [25, 25],
-      iconAnchor: [12, 25],
+    L.marker(nodoCoords, { icon: iconoNodo })
+      .addTo(map)
+      .bindPopup("<b>NODO TUNARI</b><br>VER LOS PLANES<br>Contacto: 77445566")
+      .openPopup();
+
+    let controlRuta = null;
+
+    map.on('click', function(e) {
+      if (controlRuta) map.removeControl(controlRuta);
+
+      controlRuta = L.Routing.control({
+        waypoints: [
+          L.latLng(nodoCoords),
+          L.latLng(e.latlng)
+        ],
+        router: L.Routing.osrmv1({
+          serviceUrl: 'https://router.project-osrm.org/route/v1'
+        }),
+        lineOptions: {
+          styles: [{ color: 'blue', weight: 5 }]
+        },
+        createMarker: function(i, wp) {
+          return L.marker(wp.latLng).bindPopup(i === 0 ? "Nodo Tunari" : "Destino");
+        },
+        show: false,
+        routeWhileDragging: false,
+        addWaypoints: false,
+      }).addTo(map);
     });
-
-    const nodoCoords = [-17.3949, -66.1568];
-
-    // Nodo fijo
-    const nodoMarker = L.marker(nodoCoords, { icon: iconoNodo }).addTo(map);
-    nodoMarker.bindPopup("<b>NODO TUNARI</b><br>VER LOS PLANES<br>Contacto: 77445566").openPopup();
-
-    let puntos = [L.latLng(nodoCoords)];
-    let markers = [nodoMarker];
-    let polyline = null;
-
-    function actualizarRuta() {
-      if (polyline) map.removeLayer(polyline);
-      polyline = L.polyline(puntos, { color: 'lime', weight: 4 }).addTo(map);
-
-      let distanciaTotal = 0;
-      for (let i = 0; i < puntos.length - 1; i++) {
-        distanciaTotal += map.distance(puntos[i], puntos[i + 1]);
-      }
-
-      document.getElementById('info').innerText =
-        `Haz clic para agregar o quitar puntos. Distancia total: ${(distanciaTotal / 1000).toFixed(3)} km`;
-    }
-
-    function agregarPunto(latlng) {
-      const marker = L.marker(latlng, { icon: iconoPunto }).addTo(map);
-
-      marker.on('click', function () {
-        const index = markers.indexOf(marker);
-        if (index > 0) {
-          map.removeLayer(marker);
-          markers.splice(index, 1);
-          puntos.splice(index, 1);
-          actualizarRuta();
-        }
-      });
-
-      markers.push(marker);
-      puntos.push(latlng);
-      actualizarRuta();
-    }
-
-    map.on('click', function (e) {
-      agregarPunto(e.latlng);
-    });
-
-    actualizarRuta(); // Ruta inicial con el nodo
   </script>
 </body>
 </html>

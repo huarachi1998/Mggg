@@ -2,116 +2,108 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
+  <title>Editor Mapa FTTH</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Mapa FTTx con Texto Animado</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <style>
-    body, html {
-      margin: 0; padding: 0; height: 100%;
-      font-family: Arial, sans-serif;
+    html, body, #map { height: 100%; margin: 0; }
+    .popup-form input {
+      width: 100%;
+      padding: 4px;
+      margin-top: 4px;
     }
-    #map {
-      height: 100vh;
-      width: 100vw;
+    .leaflet-popup-content-wrapper {
+      min-width: 200px;
     }
-
-    /* Animación para parpadeo suave */
-    @keyframes pulse {
-      0%, 100% { opacity: 1; }
-      50% { opacity: 0.5; }
-    }
-
-    /* Clases para texto animado y estilos */
-    .popup-title {
-      color: #1e90ff; /* azul */
-      font-size: 18px;
-      font-weight: bold;
-      animation: pulse 2s infinite;
-    }
-    .popup-subtitle {
-      color: #ff4500; /* naranja rojizo */
-      font-size: 16px;
-      font-style: italic;
-      animation: pulse 3s infinite;
-    }
-    .popup-description {
-      color: #32cd32; /* verde lima */
-      font-size: 14px;
-      animation: pulse 4s infinite;
+    .toolbar {
+      position: absolute;
+      top: 10px; left: 10px;
+      background: white;
+      padding: 10px;
+      border-radius: 8px;
+      z-index: 1000;
+      box-shadow: 0 0 10px rgba(0,0,0,0.2);
     }
   </style>
-
-  <!-- Leaflet CSS -->
-  <link
-    rel="stylesheet"
-    href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-    crossorigin=""
-  />
 </head>
 <body>
+<div class="toolbar">
+  <button onclick="addPoint()">➕ Añadir Punto</button>
+  <button onclick="clearPoints()">🗑 Borrar Todo</button>
+</div>
+<div id="map"></div>
 
-  <div id="map"></div>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+  const map = L.map("map").setView([-16.5, -68.1], 13);
 
-  <!-- Leaflet JS -->
-  <script
-    src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
-    crossorigin=""
-  ></script>
+  L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+    attribution: "© OpenStreetMap",
+    maxZoom: 19,
+  }).addTo(map);
 
-  <script>
-    // Inicializar mapa en coordenadas de La Paz (ejemplo)
-    const map = L.map("map").setView([-16.5, -68.1], 12);
+  let markers = [];
 
-    // Capa base OpenStreetMap
-    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-      maxZoom: 19,
-      attribution: '© OpenStreetMap'
-    }).addTo(map);
+  // Cargar desde LocalStorage
+  const savedPoints = JSON.parse(localStorage.getItem("ftthPoints") || "[]");
+  savedPoints.forEach(p => createMarker(p.lat, p.lng, p.name));
 
-    // Marcadores con textos personalizados
-    const puntosFTTH = [
-      {
-        title: "Nodo Tunari",
-        subtitle: "OLT C300",
-        description: "Caja NAP C2X3 Susucubambi",
-        coords: [-16.5, -68.1]
-      },
-      {
-        title: "Nodo Tunari",
-        subtitle: "OLT C300",
-        description: "Caja NAP C2X3 Susucubambi",
-        coords: [-16.52, -68.12]
-      },
-      {
-        title: "Nodo Tunari",
-        subtitle: "OLT C300",
-        description: "Caja NAP C2X3 Susucubambi",
-        coords: [-16.48, -68.08]
-      },
-      {
-        title: "Nodo Tunari",
-        subtitle: "OLT C300",
-        description: "Caja NAP C2X3 Susucubambi",
-        coords: [-16.51, -68.11]
-      },
-      {
-        title: "Nodo Tunari",
-        subtitle: "OLT C300",
-        description: "Caja NAP C2X3 Susucubambi",
-        coords: [-16.49, -68.09]
-      },
-    ];
+  function createMarker(lat, lng, name = "Nodo FTTH") {
+    const marker = L.marker([lat, lng], { draggable: true }).addTo(map);
 
-    // Agregar marcadores con popup estilizado y animado
-    puntosFTTH.forEach(({title, subtitle, description, coords}) => {
-      L.marker(coords)
-        .addTo(map)
-        .bindPopup(`
-          <div class="popup-title">${title}</div>
-          <div class="popup-subtitle">${subtitle}</div>
-          <div class="popup-description">${description}</div>
-        `);
-    });
-  </script>
+    const updatePopup = () => {
+      marker.bindPopup(`
+        <div class="popup-form">
+          <label><b>Nombre:</b></label>
+          <input type="text" value="${marker.name}" 
+                 oninput="this.parentElement.dataset.newname = this.value" />
+          <br><button onclick="saveName(this)">💾 Guardar</button>
+        </div>
+      `).openPopup();
+    };
 
+    marker.name = name;
+    updatePopup();
+
+    marker.on("click", () => updatePopup());
+    marker.on("dragend", saveAllMarkers);
+
+    markers.push(marker);
+  }
+
+  function saveName(btn) {
+    const popup = btn.closest(".popup-form");
+    const name = popup.dataset.newname || "Nodo FTTH";
+    const marker = markers.find(m => m._popup._content.includes(name));
+    if (marker) {
+      marker.name = name;
+      marker.closePopup();
+      saveAllMarkers();
+    }
+  }
+
+  function addPoint() {
+    const center = map.getCenter();
+    createMarker(center.lat, center.lng, "Nuevo Nodo");
+    saveAllMarkers();
+  }
+
+  function clearPoints() {
+    if (confirm("¿Borrar todos los puntos?")) {
+      markers.forEach(m => map.removeLayer(m));
+      markers = [];
+      localStorage.removeItem("ftthPoints");
+    }
+  }
+
+  function saveAllMarkers() {
+    const data = markers.map(m => ({
+      lat: m.getLatLng().lat,
+      lng: m.getLatLng().lng,
+      name: m.name || "Nodo FTTH"
+    }));
+    localStorage.setItem("ftthPoints", JSON.stringify(data));
+  }
+</script>
 </body>
 </html>

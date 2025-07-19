@@ -2,170 +2,161 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Gusano atrapa letra</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>MegaFibra | Internet por Fibra Óptica</title>
   <style>
-    body, html {
-      margin: 0; padding: 0; height: 100vh;
-      background: #000; overflow: hidden;
-      font-family: monospace;
-      color: #0f0;
+    body {
+      margin: 0;
+      font-family: "Segoe UI", sans-serif;
+      background: #f4f4f4;
+      color: #333;
     }
-
-    #game-area {
-      position: relative;
-      width: 100vw;
-      height: 100vh;
-      background: #111;
+    header {
+      background: #0047ab;
+      color: white;
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
     }
-
-    .segment {
-      position: absolute;
-      width: 20px;
-      height: 20px;
-      background: #0f0;
+    header h1 {
+      margin: 0;
+    }
+    nav a {
+      color: white;
+      margin-left: 1rem;
+      text-decoration: none;
+      font-weight: bold;
+    }
+    .hero {
+      background: url('https://images.unsplash.com/photo-1581091012184-5c3b0f9c4e47?auto=format&fit=crop&w=1470&q=80') no-repeat center/cover;
+      color: white;
+      padding: 6rem 2rem;
+      text-align: center;
+    }
+    .hero h2 {
+      font-size: 2.5rem;
+      margin: 0;
+    }
+    .hero p {
+      font-size: 1.2rem;
+      margin-top: 1rem;
+    }
+    .btn {
+      background: #ff8c00;
+      color: white;
+      padding: 0.8rem 1.5rem;
+      margin-top: 1.5rem;
+      display: inline-block;
+      border: none;
+      font-weight: bold;
+      border-radius: 5px;
+      cursor: pointer;
+      text-decoration: none;
+    }
+    section {
+      padding: 3rem 2rem;
+      max-width: 1100px;
+      margin: auto;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 2rem;
+    }
+    .card {
+      background: white;
+      padding: 1.5rem;
       border-radius: 10px;
-      box-shadow: 0 0 8px #0f0;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
     }
-
-    #target-letter {
-      position: absolute;
-      font-size: 36px;
-      font-weight: bold;
-      color: red;
-      text-shadow: 0 0 6px red;
-      pointer-events: none;
+    footer {
+      background: #222;
+      color: #ccc;
+      text-align: center;
+      padding: 2rem 1rem;
     }
-
-    #text {
-      position: absolute;
-      font-size: 20px;
-      font-weight: bold;
-      color: #0f0;
-      text-shadow: 0 0 8px #0f0;
-      pointer-events: none;
-    }
-
-    #alert {
-      position: fixed;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%) scale(0);
-      font-size: 48px;
-      font-weight: bold;
-      color: yellow;
-      text-shadow: 0 0 12px red, 0 0 24px red;
-      background: rgba(0,0,0,0.7);
-      padding: 20px 40px;
-      border-radius: 12px;
-      transition: transform 0.3s ease;
-      z-index: 1000;
-    }
-
-    #alert.show {
-      transform: translate(-50%, -50%) scale(1);
+    footer a {
+      color: #ff8c00;
+      margin: 0 0.5rem;
+      text-decoration: none;
     }
   </style>
 </head>
 <body>
 
-<div id="game-area">
-  <div id="text">chispas poto</div>
-  <div id="target-letter">A</div>
-  <div id="alert">¡NO ME TOQUES, POTO!</div>
+<header>
+  <h1>MegaFibra</h1>
+  <nav>
+    <a href="#servicios">Servicios</a>
+    <a href="#cobertura">Cobertura</a>
+    <a href="#planes">Planes</a>
+    <a href="#contacto">Contacto</a>
+  </nav>
+</header>
+
+<div class="hero">
+  <h2>Internet de alta velocidad por fibra óptica</h2>
+  <p>Conexión rápida, estable y sin interrupciones para tu hogar o empresa.</p>
+  <a href="#planes" class="btn">Ver Planes</a>
 </div>
 
-<script>
-  const gameArea = document.getElementById('game-area');
-  const text = document.getElementById('text');
-  const letter = document.getElementById('target-letter');
-  const alertBox = document.getElementById('alert');
+<section id="servicios">
+  <h2>Servicios</h2>
+  <div class="grid">
+    <div class="card">
+      <h3>Internet Hogar</h3>
+      <p>Planes ideales para familias, con streaming, juegos y clases online sin interrupciones.</p>
+    </div>
+    <div class="card">
+      <h3>Internet Corporativo</h3>
+      <p>Soluciones empresariales de alta velocidad con soporte técnico dedicado.</p>
+    </div>
+    <div class="card">
+      <h3>Instalación Rápida</h3>
+      <p>Instalamos tu conexión en menos de 24 horas. Garantía y soporte incluidos.</p>
+    </div>
+  </div>
+</section>
 
-  const segmentSize = 20;
-  const totalSegments = 10;
+<section id="cobertura">
+  <h2>Zona de Cobertura</h2>
+  <p>Actualmente ofrecemos cobertura en más de 30 zonas urbanas y rurales. ¡Pronto llegaremos a más lugares!</p>
+</section>
 
-  // Crear segmentos del gusano
-  const segments = [];
-  for (let i = 0; i < totalSegments; i++) {
-    const seg = document.createElement('div');
-    seg.classList.add('segment');
-    gameArea.appendChild(seg);
-    segments.push({ el: seg, x: 0, y: 0 });
-  }
+<section id="planes">
+  <h2>Planes Disponibles</h2>
+  <div class="grid">
+    <div class="card">
+      <h3>Plan Básico</h3>
+      <p>Velocidad: 30 Mbps<br>Bs. 120/mes</p>
+    </div>
+    <div class="card">
+      <h3>Plan Familiar</h3>
+      <p>Velocidad: 80 Mbps<br>Bs. 180/mes</p>
+    </div>
+    <div class="card">
+      <h3>Plan Pro</h3>
+      <p>Velocidad: 150 Mbps<br>Bs. 250/mes</p>
+    </div>
+  </div>
+</section>
 
-  let headX = 0;
-  let headY = gameArea.clientHeight / 2 - segmentSize / 2;
-  let speedX = 2;
-  let direction = 1;
+<section id="contacto">
+  <h2>Contáctanos</h2>
+  <p>📞 WhatsApp: <a href="https://wa.me/59171234567" target="_blank">+591 71234567</a></p>
+  <p>📧 Correo: info@megafibra.bo</p>
+  <p>📍 Dirección: Calle Ejemplo 123, Ciudad, Bolivia</p>
+</section>
 
-  // Posición de la letra flotante
-  let letterX = 300;
-  let letterY = 200;
-  letter.style.left = letterX + 'px';
-  letter.style.top = letterY + 'px';
-
-  function update() {
-    // Mover cabeza
-    headX += speedX * direction;
-
-    if (headX > gameArea.clientWidth - segmentSize) {
-      direction = -1;
-      headX = gameArea.clientWidth - segmentSize;
-    } else if (headX < 0) {
-      direction = 1;
-      headX = 0;
-    }
-
-    // Oscilar suavemente verticalmente
-    headY = gameArea.clientHeight / 2 + 60 * Math.sin(headX / 80);
-
-    // Mover cuerpo
-    for (let i = segments.length - 1; i > 0; i--) {
-      segments[i].x = segments[i - 1].x;
-      segments[i].y = segments[i - 1].y;
-    }
-    segments[0].x = headX;
-    segments[0].y = headY;
-
-    segments.forEach(seg => {
-      seg.el.style.left = seg.x + 'px';
-      seg.el.style.top = seg.y + 'px';
-    });
-
-    // Seguir el texto
-    const last = segments[segments.length - 1];
-    text.style.left = (last.x + 30) + 'px';
-    text.style.top = (last.y) + 'px';
-
-    // Detectar colisión con letra
-    const dx = segments[0].x - letterX;
-    const dy = segments[0].y - letterY;
-    const dist = Math.sqrt(dx * dx + dy * dy);
-
-    if (dist < 25) {
-      showAlert();
-      relocateLetter();
-    }
-
-    requestAnimationFrame(update);
-  }
-
-  function showAlert() {
-    alertBox.classList.add('show');
-    setTimeout(() => {
-      alertBox.classList.remove('show');
-    }, 2000);
-  }
-
-  function relocateLetter() {
-    letterX = Math.random() * (gameArea.clientWidth - 50);
-    letterY = Math.random() * (gameArea.clientHeight - 50);
-    letter.style.left = letterX + 'px';
-    letter.style.top = letterY + 'px';
-  }
-
-  update();
-</script>
+<footer>
+  <p>&copy; 2025 MegaFibra. Todos los derechos reservados.</p>
+  <p>
+    <a href="#">Facebook</a> |
+    <a href="#">Instagram</a> |
+    <a href="#">TikTok</a>
+  </p>
+</footer>
 
 </body>
 </html>

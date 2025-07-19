@@ -1,108 +1,156 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>MegaFibra | Conexión que te mira</title>
-  <style>
-    body {
-      margin: 0;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background: #e0f2ff;
-      color: #004080;
-      display: flex;
-      flex-direction: column;
-      min-height: 100vh;
-    }
-    header {
-      background: #004080;
-      color: white;
-      padding: 1rem 2rem;
-      text-align: center;
-    }
-    header h1 {
-      margin: 0;
-      font-weight: 700;
-    }
-    main {
-      flex: 1;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      padding: 2rem;
-      gap: 2rem;
-      flex-wrap: wrap;
-      max-width: 1200px;
-      margin: 0 auto;
-    }
-    .text-section {
-      max-width: 500px;
-    }
-    h2 {
-      font-size: 2.5rem;
-      margin-bottom: 1rem;
-    }
-    p {
-      font-size: 1.2rem;
-      line-height: 1.5;
-    }
-    .btn {
-      display: inline-block;
-      margin-top: 1.5rem;
-      padding: 0.8rem 1.8rem;
-      background-color: #ff8c00;
-      color: white;
-      font-weight: bold;
-      border-radius: 5px;
-      text-decoration: none;
-      cursor: pointer;
-      transition: background-color 0.3s ease;
-    }
-    .btn:hover {
-      background-color: #e67e00;
-    }
-    .face-svg {
-      width: 300px;
-      height: 300px;
-      filter: drop-shadow(2px 4px 6px rgba(0,0,0,0.2));
-    }
-    footer {
-      background: #004080;
-      color: white;
-      text-align: center;
-      padding: 1rem;
-      font-size: 0.9rem;
-    }
-  </style>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>MegaFibra | Te estoy viendo</title>
+<style>
+  body {
+    margin: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: #001f3f;
+    color: #00ccff;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+  }
+  h1 {
+    font-size: 3rem;
+    font-weight: 900;
+    margin-bottom: 2rem;
+    letter-spacing: 0.1em;
+    color: #00ffff;
+    text-shadow:
+      0 0 5px #00ffff,
+      0 0 10px #00ffff,
+      0 0 20px #00ffff,
+      0 0 40px #00ffff;
+    animation: sparkle 1.5s infinite alternate;
+  }
+  @keyframes sparkle {
+    0%, 100% {text-shadow:
+      0 0 5px #00ffff,
+      0 0 10px #00ffff,
+      0 0 20px #00ffff,
+      0 0 40px #00ffff;}
+    50% {text-shadow:
+      0 0 10px #00ffff,
+      0 0 15px #00ffff,
+      0 0 30px #00ffff,
+      0 0 60px #00ffff;}
+  }
+  svg {
+    width: 250px;
+    height: 250px;
+    filter: drop-shadow(0 0 10px #00ccff);
+  }
+  /* Ojos abiertos y cerrados */
+  .eye-open {
+    transition: opacity 0.3s ease;
+  }
+  .eye-closed {
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+  .eye-lid {
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+  .eye-lid.visible {
+    opacity: 1;
+  }
+  /* Sonrisa */
+  .smile {
+    opacity: 0;
+    transition: opacity 0.5s ease;
+  }
+  .smile.visible {
+    opacity: 1;
+  }
+  .mouth-neutral {
+    transition: opacity 0.5s ease;
+  }
+  .mouth-neutral.hidden {
+    opacity: 0;
+  }
+</style>
 </head>
 <body>
 
-<header>
-  <h1>MegaFibra</h1>
-</header>
+<h1 id="sparkle-text">¡Te estoy viendo!</h1>
 
-<main>
-  <div class="text-section">
-    <h2>La conexión que te mira y entiende</h2>
-    <p>Con MegaFibra, disfruta internet rápido, confiable y sin interrupciones. Perfecto para hogares y empresas que necesitan estar siempre conectados.</p>
-    <a href="#contacto" class="btn">Contacta con nosotros</a>
-  </div>
-
-  <!-- SVG de cara mirando hacia la derecha -->
-  <svg class="face-svg" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Cara mirando a la derecha">
-    <circle cx="100" cy="100" r="90" fill="#ffcc99" stroke="#cc9966" stroke-width="4"/>
+<svg viewBox="0 0 200 200" role="img" aria-label="Cara animada que abre y cierra ojos y sonríe">
+  <circle cx="100" cy="100" r="90" fill="#ffcc99" stroke="#cc9966" stroke-width="4"/>
+  
+  <!-- Ojo izquierdo abierto -->
+  <g id="eye-left-open" class="eye-open">
     <circle cx="65" cy="85" r="20" fill="white"/>
     <circle cx="70" cy="85" r="10" fill="#004080"/>
+  </g>
+  <!-- Ojo izquierdo cerrado (línea) -->
+  <line id="eye-left-closed" class="eye-lid" x1="45" y1="85" x2="85" y2="85" stroke="#004080" stroke-width="6" stroke-linecap="round"/>
+  
+  <!-- Ojo derecho abierto -->
+  <g id="eye-right-open" class="eye-open">
     <circle cx="130" cy="85" r="20" fill="white"/>
     <circle cx="125" cy="85" r="10" fill="#004080"/>
-    <path d="M 70 130 Q 100 160 130 130" stroke="#cc9966" stroke-width="5" fill="none" stroke-linecap="round"/>
-    <path d="M 50 120 Q 40 100 50 80" stroke="#cc9966" stroke-width="6" fill="none" stroke-linecap="round"/>
-  </svg>
-</main>
+  </g>
+  <!-- Ojo derecho cerrado (línea) -->
+  <line id="eye-right-closed" class="eye-lid" x1="110" y1="85" x2="150" y2="85" stroke="#004080" stroke-width="6" stroke-linecap="round"/>
+  
+  <!-- Boca neutral -->
+  <path id="mouth-neutral" class="mouth-neutral" d="M 70 130 Q 100 160 130 130" stroke="#cc9966" stroke-width="5" fill="none" stroke-linecap="round"/>
+  
+  <!-- Boca sonriente -->
+  <path id="mouth-smile" class="smile" d="M 70 135 Q 100 180 130 135" stroke="#004080" stroke-width="6" fill="none" stroke-linecap="round"/>
+</svg>
 
-<footer>
-  &copy; 2025 MegaFibra - Internet por fibra óptica. Todos los derechos reservados.
-</footer>
+<script>
+  const eyeLeftOpen = document.getElementById('eye-left-open');
+  const eyeLeftClosed = document.getElementById('eye-left-closed');
+  const eyeRightOpen = document.getElementById('eye-right-open');
+  const eyeRightClosed = document.getElementById('eye-right-closed');
+  const mouthNeutral = document.getElementById('mouth-neutral');
+  const mouthSmile = document.getElementById('mouth-smile');
+  const sparkleText = document.getElementById('sparkle-text');
+
+  function blink() {
+    // Cierra ojos
+    eyeLeftOpen.classList.add('eye-closed');
+    eyeLeftOpen.classList.remove('eye-open');
+    eyeRightOpen.classList.add('eye-closed');
+    eyeRightOpen.classList.remove('eye-open');
+    eyeLeftClosed.classList.add('visible');
+    eyeRightClosed.classList.add('visible');
+
+    // Abrir después de 400ms
+    setTimeout(() => {
+      eyeLeftOpen.classList.remove('eye-closed');
+      eyeLeftOpen.classList.add('eye-open');
+      eyeRightOpen.classList.remove('eye-closed');
+      eyeRightOpen.classList.add('eye-open');
+      eyeLeftClosed.classList.remove('visible');
+      eyeRightClosed.classList.remove('visible');
+    }, 400);
+  }
+
+  function changeToSmile() {
+    mouthNeutral.classList.add('hidden');
+    mouthSmile.classList.add('visible');
+    sparkleText.textContent = '¡Me alegra verte!';
+  }
+
+  // Ciclo: Parpadear cada 3s, cambiar a sonrisa a los 10s
+  setInterval(blink, 3000);
+
+  setTimeout(() => {
+    changeToSmile();
+  }, 10000);
+
+</script>
 
 </body>
 </html>

@@ -1,231 +1,131 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Login y Dashboard con Iconos</title>
-  <style>
-    /* Reset y base */
-    * {
-      box-sizing: border-box;
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Login Elegante Animado</title>
+<style>
+  /* Fondo animado con gradiente */
+  @keyframes gradientShift {
+    0% {
+      background-position: 0% 50%;
     }
-    body, html {
-      margin: 0; padding: 0; height: 100%;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background: linear-gradient(135deg, #4a90e2, #9013fe);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      overflow: hidden;
-      color: #333;
+    50% {
+      background-position: 100% 50%;
     }
+    100% {
+      background-position: 0% 50%;
+    }
+  }
 
-    /* Contenedor login */
-    #login-box {
-      background: white;
-      padding: 2.5rem 3rem;
-      border-radius: 12px;
-      box-shadow: 0 12px 25px rgba(0,0,0,0.2);
-      width: 320px;
-      text-align: center;
-      opacity: 0;
-      transform: translateY(-30px);
-      animation: slideFadeIn 0.8s forwards;
-      z-index: 10;
-    }
+  body, html {
+    height: 100%;
+    margin: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(-45deg, #4a90e2, #9013fe, #e040fb, #448aff);
+    background-size: 400% 400%;
+    animation: gradientShift 15s ease infinite;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
 
-    @keyframes slideFadeIn {
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
-    }
+  /* Caja de login */
+  #login-box {
+    background: rgba(255, 255, 255, 0.95);
+    padding: 3rem 3.5rem;
+    border-radius: 20px;
+    box-shadow: 0 25px 40px rgba(0, 0, 0, 0.2);
+    width: 360px;
+    text-align: center;
+    opacity: 0;
+    transform: translateY(-40px);
+    animation: fadeInUp 1s forwards;
+  }
 
-    #login-box h2 {
-      margin-bottom: 1.5rem;
-      color: #333;
-      font-weight: 700;
+  @keyframes fadeInUp {
+    to {
+      opacity: 1;
+      transform: translateY(0);
     }
+  }
 
-    #login-box input {
-      width: 100%;
-      padding: 0.7rem;
-      margin: 0.7rem 0 1.3rem 0;
-      border: 1.5px solid #ddd;
-      border-radius: 6px;
-      font-size: 1rem;
-      transition: border-color 0.3s ease;
-    }
-    #login-box input:focus {
-      border-color: #4a90e2;
-      outline: none;
-    }
+  #login-box h2 {
+    margin-bottom: 2rem;
+    font-weight: 800;
+    color: #4a148c;
+    letter-spacing: 2px;
+  }
 
-    #login-box button {
-      width: 100%;
-      padding: 0.75rem;
-      border: none;
-      border-radius: 8px;
-      background: #4a90e2;
-      color: white;
-      font-size: 1.1rem;
-      font-weight: 700;
-      cursor: pointer;
-      box-shadow: 0 6px 12px rgba(74,144,226,0.5);
-      transition: background-color 0.3s ease;
-    }
-    #login-box button:hover {
-      background: #357ABD;
-    }
+  input {
+    width: 100%;
+    padding: 0.85rem 1rem;
+    margin-bottom: 1.5rem;
+    border: 2px solid #ddd;
+    border-radius: 12px;
+    font-size: 1.1rem;
+    transition: border-color 0.3s ease;
+    outline: none;
+  }
+  input:focus {
+    border-color: #7e57c2;
+    box-shadow: 0 0 10px #9575cdaa;
+  }
 
-    #error-msg {
-      color: #d93025;
-      font-weight: 600;
-      margin-top: 0.5rem;
-      display: none;
-    }
+  button {
+    width: 100%;
+    padding: 0.85rem;
+    background: #7e57c2;
+    border: none;
+    border-radius: 12px;
+    color: white;
+    font-weight: 700;
+    font-size: 1.2rem;
+    cursor: pointer;
+    box-shadow: 0 8px 20px #9575cdcc;
+    transition: background-color 0.3s ease;
+  }
+  button:hover {
+    background: #5e35b1;
+  }
 
-    /* Dashboard */
-    #dashboard {
-      display: none;
-      height: 100vh;
-      width: 100vw;
-      background: #f5f5f5;
-      padding: 30px;
-      box-sizing: border-box;
-      overflow-y: auto;
-      text-align: center;
-    }
-
-    #logout-btn {
-      position: fixed;
-      top: 15px;
-      right: 15px;
-      background: #d93025;
-      color: white;
-      border: none;
-      padding: 0.6rem 1.2rem;
-      border-radius: 6px;
-      font-weight: 700;
-      cursor: pointer;
-      box-shadow: 0 4px 10px rgba(217,48,37,0.7);
-      z-index: 10;
-    }
-    #logout-btn:hover {
-      background: #a8221b;
-    }
-
-    /* Contenedor iconos */
-    .icons-container {
-      display: grid;
-      grid-template-columns: repeat(auto-fit,minmax(150px,1fr));
-      gap: 30px;
-      max-width: 900px;
-      margin: 0 auto;
-      padding-top: 50px;
-    }
-
-    .icon-card {
-      background: white;
-      border-radius: 20px;
-      padding: 30px 20px;
-      box-shadow: 0 6px 15px rgba(0,0,0,0.1);
-      cursor: pointer;
-      transition: transform 0.3s ease, box-shadow 0.3s ease;
-      user-select: none;
-    }
-    .icon-card:hover {
-      transform: translateY(-10px);
-      box-shadow: 0 12px 30px rgba(0,0,0,0.15);
-    }
-
-    /* Iconos grandes (SVG inline o emoji) */
-    .icon-svg {
-      font-size: 70px;
-      margin-bottom: 15px;
-      color: #4a90e2;
-    }
-
-    /* Títulos */
-    .icon-title {
-      font-size: 22px;
-      font-weight: 700;
-      color: #333;
-    }
-  </style>
+  #error-msg {
+    color: #d32f2f;
+    font-weight: 600;
+    margin-top: 0.8rem;
+    display: none;
+  }
+</style>
 </head>
 <body>
 
-  <!-- LOGIN -->
   <div id="login-box">
-    <h2>Iniciar Sesión</h2>
+    <h2>Bienvenido</h2>
     <input type="text" id="username" placeholder="Usuario" autocomplete="username" />
     <input type="password" id="password" placeholder="Contraseña" autocomplete="current-password" />
     <button onclick="login()">Entrar</button>
     <p id="error-msg">Usuario o contraseña incorrectos</p>
   </div>
 
-  <!-- DASHBOARD -->
-  <div id="dashboard">
-    <button id="logout-btn" onclick="logout()">Cerrar sesión</button>
-    <h1>Panel de Control</h1>
-    <div class="icons-container">
-      <div class="icon-card" onclick="openURL('https://maps.example.com')">
-        <div class="icon-svg">🗺️</div>
-        <div class="icon-title">Mapa</div>
-      </div>
-      <div class="icon-card" onclick="openURL('https://vpn.example.com')">
-        <div class="icon-svg">🔒</div>
-        <div class="icon-title">VPN</div>
-      </div>
-      <div class="icon-card" onclick="openURL('https://programa.example.com')">
-        <div class="icon-svg">💻</div>
-        <div class="icon-title">Programa</div>
-      </div>
-      <div class="icon-card" onclick="openURL('https://admin.example.com')">
-        <div class="icon-svg">🛠️</div>
-        <div class="icon-title">Admin</div>
-      </div>
-      <div class="icon-card" onclick="openURL('https://olt.example.com')">
-        <div class="icon-svg">📡</div>
-        <div class="icon-title">OLT</div>
-      </div>
-    </div>
-  </div>
+<script>
+  const validUser = "admin";
+  const validPass = "1234";
 
-  <script>
-    const validUser = "admin";
-    const validPass = "1234";
+  const errorMsg = document.getElementById("error-msg");
 
-    const loginBox = document.getElementById("login-box");
-    const errorMsg = document.getElementById("error-msg");
-    const dashboard = document.getElementById("dashboard");
+  function login() {
+    const user = document.getElementById("username").value.trim();
+    const pass = document.getElementById("password").value.trim();
 
-    function login() {
-      const user = document.getElementById("username").value.trim();
-      const pass = document.getElementById("password").value.trim();
-
-      if(user === validUser && pass === validPass) {
-        errorMsg.style.display = "none";
-        loginBox.style.display = "none";
-        dashboard.style.display = "block";
-      } else {
-        errorMsg.style.display = "block";
-      }
-    }
-
-    function logout() {
-      dashboard.style.display = "none";
-      loginBox.style.display = "block";
+    if(user === validUser && pass === validPass) {
       errorMsg.style.display = "none";
-      document.getElementById("username").value = "";
-      document.getElementById("password").value = "";
+      alert("¡Login exitoso!");
+      // Aquí puedes redirigir o mostrar el dashboard
+    } else {
+      errorMsg.style.display = "block";
     }
-
-    function openURL(url) {
-      window.open(url, "_blank");
-    }
-  </script>
+  }
+</script>
 
 </body>
 </html>

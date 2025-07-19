@@ -25,20 +25,17 @@
     }).addTo(map);
 
     omnivore.kml('doc.kml')
-      .on('ready', function() {
-        const layer = this;
-        layer.eachLayer(function(marker) {
-          const name = marker.feature?.properties?.name;
-          if (name) {
-            marker.bindTooltip(name, {permanent: true, direction: 'top'}).openTooltip();
-          }
-        });
-        map.fitBounds(layer.getBounds());
-      })
-      .on('error', function(e) {
-        console.error('Error cargando KML:', e);
-      })
-      .addTo(map);
+  .on('ready', function() {
+    const layer = this;
+    layer.eachLayer(function(marker) {
+      const name = marker.feature?.properties?.name;
+      if (name) {
+        marker.bindTooltip(name, {permanent: true, direction: 'top'}).openTooltip();
+      }
+    });
+    map.fitBounds(layer.getBounds());
+  })
+  .addTo(map);
   </script>
 </body>
 </html>

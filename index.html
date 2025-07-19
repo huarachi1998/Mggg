@@ -3,129 +3,87 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Login Elegante Animado</title>
+<title>Serpiente cortando pantalla</title>
 <style>
-  /* Fondo animado con gradiente */
-  @keyframes gradientShift {
-    0% {
-      background-position: 0% 50%;
-    }
-    50% {
-      background-position: 100% 50%;
-    }
-    100% {
-      background-position: 0% 50%;
-    }
-  }
-
   body, html {
-    height: 100%;
-    margin: 0;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background: linear-gradient(-45deg, #4a90e2, #9013fe, #e040fb, #448aff);
-    background-size: 400% 400%;
-    animation: gradientShift 15s ease infinite;
+    margin:0; padding:0; height:100vh; overflow:hidden;
+    background: black;
     display: flex;
     justify-content: center;
     align-items: center;
+    color: #0f0;
+    font-family: monospace;
   }
-
-  /* Caja de login */
-  #login-box {
-    background: rgba(255, 255, 255, 0.95);
-    padding: 3rem 3.5rem;
-    border-radius: 20px;
-    box-shadow: 0 25px 40px rgba(0, 0, 0, 0.2);
-    width: 360px;
-    text-align: center;
-    opacity: 0;
-    transform: translateY(-40px);
-    animation: fadeInUp 1s forwards;
+  #snake-container {
+    position: relative;
+    width: 100vw;
+    height: 100vh;
   }
-
-  @keyframes fadeInUp {
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
+  #snake {
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    background: limegreen;
+    border-radius: 50%;
+    box-shadow: 0 0 8px limegreen;
   }
-
-  #login-box h2 {
-    margin-bottom: 2rem;
-    font-weight: 800;
-    color: #4a148c;
-    letter-spacing: 2px;
-  }
-
-  input {
-    width: 100%;
-    padding: 0.85rem 1rem;
-    margin-bottom: 1.5rem;
-    border: 2px solid #ddd;
-    border-radius: 12px;
-    font-size: 1.1rem;
-    transition: border-color 0.3s ease;
-    outline: none;
-  }
-  input:focus {
-    border-color: #7e57c2;
-    box-shadow: 0 0 10px #9575cdaa;
-  }
-
-  button {
-    width: 100%;
-    padding: 0.85rem;
-    background: #7e57c2;
-    border: none;
-    border-radius: 12px;
-    color: white;
-    font-weight: 700;
-    font-size: 1.2rem;
-    cursor: pointer;
-    box-shadow: 0 8px 20px #9575cdcc;
-    transition: background-color 0.3s ease;
-  }
-  button:hover {
-    background: #5e35b1;
-  }
-
-  #error-msg {
-    color: #d32f2f;
-    font-weight: 600;
-    margin-top: 0.8rem;
-    display: none;
+  #text {
+    position: absolute;
+    font-size: 2.5rem;
+    font-weight: bold;
+    color: #0f0;
+    text-shadow:
+      0 0 10px limegreen,
+      0 0 20px limegreen,
+      0 0 30px limegreen;
+    user-select: none;
+    pointer-events: none;
+    white-space: nowrap;
   }
 </style>
 </head>
 <body>
-
-  <div id="login-box">
-    <h2>Bienvenido</h2>
-    <input type="text" id="username" placeholder="Usuario" autocomplete="username" />
-    <input type="password" id="password" placeholder="Contraseña" autocomplete="current-password" />
-    <button onclick="login()">Entrar</button>
-    <p id="error-msg">Usuario o contraseña incorrectos</p>
-  </div>
+<div id="snake-container">
+  <div id="snake"></div>
+  <div id="text">chispas poto</div>
+</div>
 
 <script>
-  const validUser = "admin";
-  const validPass = "1234";
+  const snake = document.getElementById('snake');
+  const text = document.getElementById('text');
+  const container = document.getElementById('snake-container');
 
-  const errorMsg = document.getElementById("error-msg");
+  let posX = 0;
+  let posY = window.innerHeight / 2;
+  let direction = 1; // 1 = right, -1 = left
+  let speed = 4;
 
-  function login() {
-    const user = document.getElementById("username").value.trim();
-    const pass = document.getElementById("password").value.trim();
+  function move() {
+    posX += speed * direction;
 
-    if(user === validUser && pass === validPass) {
-      errorMsg.style.display = "none";
-      alert("¡Login exitoso!");
-      // Aquí puedes redirigir o mostrar el dashboard
-    } else {
-      errorMsg.style.display = "block";
-    }
+    // Oscilar arriba y abajo con una función seno para efecto cortante
+    posY = window.innerHeight / 2 + 100 * Math.sin(posX / 50);
+
+    snake.style.left = posX + 'px';
+    snake.style.top = posY + 'px';
+
+    // El texto sigue la serpiente con un pequeño offset
+    text.style.left = (posX + 30) + 'px';
+    text.style.top = (posY - 20) + 'px';
+
+    // Cambiar dirección cuando toca borde de pantalla
+    if (posX > window.innerWidth - 30) direction = -1;
+    else if (posX < 0) direction = 1;
+
+    requestAnimationFrame(move);
   }
-</script>
 
+  move();
+
+  // Actualizar altura en caso de cambio de tamaño ventana
+  window.addEventListener('resize', () => {
+    posY = window.innerHeight / 2;
+  });
+</script>
 </body>
 </html>

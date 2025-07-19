@@ -1,31 +1,74 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Mapa con Etiquetas</title>
-    <script src="https://maps.googleapis.com/maps/api/js?key=TU_API_KEY"></script>
+    <title>Mapa FTTH - Meganet</title>
+    <meta charset="utf-8" />
+    <style>
+      #map {
+        height: 100vh;
+        width: 100%;
+      }
+      .gm-style-iw {
+        font-size: 14px;
+        line-height: 1.5;
+      }
+    </style>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC2OKbHXMKYn43pNxNtZujiAqIEmyBHHo0&libraries=geometry,drawing"></script>
     <script>
+      let map, infoWindow;
+
       function initMap() {
-        const map = new google.maps.Map(document.getElementById("map"), {
-          zoom: 13,
-          center: { lat: -16.5, lng: -68.15 }, // Ajusta si es necesario
+        map = new google.maps.Map(document.getElementById("map"), {
+          center: { lat: -17.3949, lng: -66.1568 }, // Ubicación de Nodo Tunari
+          zoom: 14,
         });
 
-        map.data.loadGeoJson("marcadores.geojson");
+        infoWindow = new google.maps.InfoWindow();
 
-        // Mostrar etiqueta al hacer clic
-        map.data.addListener("click", function(event) {
-          const nombre = event.feature.getProperty("name"); // o "title"
-          const infowindow = new google.maps.InfoWindow({
-            content: nombre,
-            position: event.latLng,
-          });
-          infowindow.open(map);
+        // 🔴 Nodo Tunari
+        const nodoTunari = new google.maps.Marker({
+          position: { lat: -17.3949, lng: -66.1568 },
+          map,
+          title: "Nodo Tunari",
+        });
+
+        // 💬 Etiqueta emergente
+        const contenido = `
+          <strong>NODO TUNARI</strong><br>
+          VER LOS PLANES<br>
+          Contacto: 77445566
+        `;
+
+        nodoTunari.addListener("click", () => {
+          infoWindow.setContent(contenido);
+          infoWindow.open(map, nodoTunari);
+        });
+
+        // ✏️ Herramienta para medir distancias
+        const drawingManager = new google.maps.drawing.DrawingManager({
+          drawingMode: null,
+          drawingControl: true,
+          drawingControlOptions: {
+            position: google.maps.ControlPosition.TOP_CENTER,
+            drawingModes: ["polyline"],
+          },
+        });
+        drawingManager.setMap(map);
+
+        // 🧮 Mostrar distancia al trazar línea
+        google.maps.event.addListener(drawingManager, 'polylinecomplete', function (line) {
+          const path = line.getPath();
+          let distance = 0;
+          for (let i = 0; i < path.getLength() - 1; i++) {
+            distance += google.maps.geometry.spherical.computeDistanceBetween(
+              path.getAt(i),
+              path.getAt(i + 1)
+            );
+          }
+          alert("Distancia total: " + (distance / 1000).toFixed(2) + " km");
         });
       }
     </script>
-    <style>
-      #map { height: 100vh; width: 100%; }
-    </style>
   </head>
   <body onload="initMap()">
     <div id="map"></div>

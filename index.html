@@ -1,158 +1,93 @@
 <!DOCTYPE html>
-<html lang="es">
+<html>
 <head>
-  <meta charset="UTF-8" />
-  <title>Editor FTTH Completo</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Clon de Google My Maps</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <style>
-    html, body, #map { height: 100%; margin: 0; }
+    body, html { margin: 0; padding: 0; height: 100%; }
+    #map { height: 100%; }
+    .leaflet-popup-content input { width: 100%; }
     .toolbar {
       position: absolute;
       top: 10px; left: 10px;
-      background: white;
-      padding: 10px;
-      border-radius: 10px;
+      background: white; padding: 10px;
       z-index: 1000;
-      box-shadow: 0 0 10px rgba(0,0,0,0.3);
-    }
-    .toolbar select, .toolbar button {
-      margin: 5px 0;
-      width: 100%;
+      border-radius: 8px;
+      box-shadow: 0 0 5px #999;
     }
   </style>
 </head>
 <body>
-
 <div class="toolbar">
-  <button onclick="addPoint()">➕ Añadir Nodo</button>
-  <button onclick="startLine()">🔗 Dibujar Línea</button>
-  <select id="lineType">
-    <option value="2h">2 Hilos (azul)</option>
-    <option value="4h">4 Hilos (verde)</option>
-    <option value="troncal">Troncal (rojo)</option>
-  </select>
-  <button onclick="clearAll()">🗑 Borrar Todo</button>
+  <button onclick="mode='marker'">📍 Marcar</button>
+  <button onclick="mode='line2'">➖ Línea 2 hilos</button>
+  <button onclick="mode='line4'">➖ Línea 4 hilos</button>
+  <button onclick="mode='troncal'">⚡ Troncal</button>
+  <button onclick="save()">💾 Guardar</button>
+  <button onclick="load()">📂 Cargar</button>
 </div>
-
 <div id="map"></div>
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
-  const map = L.map("map").setView([-16.5, -68.1], 13);
-  L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-    attribution: "© OpenStreetMap",
-    maxZoom: 19,
+  const map = L.map('map').setView([-17.4, -66.15], 13); // Bolivia
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '&copy; OpenStreetMap'
   }).addTo(map);
 
-  let markers = [];
-  let lines = [];
-  let drawingLine = false;
-  let startMarker = null;
+  let mode = 'marker';
+  let drawingLine = [];
+  let allLayers = [];
 
-  const lineColors = {
-    '2h': 'blue',
-    '4h': 'green',
-    'troncal': 'red'
-  };
+  map.on('click', function(e) {
+    if (mode === 'marker') {
+      const marker = L.marker(e.latlng).addTo(map);
+      const input = document.createElement("input");
+      input.placeholder = "Nombre del punto";
+      marker.bindPopup(input);
+      marker.on("popupclose", () => {
+        const label = input.value || "Sin nombre";
+        marker.bindTooltip(label, {permanent: true}).openTooltip();
+      });
+      allLayers.push(marker);
+      marker.openPopup();
+    } else if (mode.startsWith('line')) {
+      drawingLine.push(e.latlng);
+      if (drawingLine.length >= 2) {
+        const color = mode === 'line2' ? 'blue' : mode === 'line4' ? 'green' : 'red';
+        const polyline = L.polyline(drawingLine, { color, weight: 4 }).addTo(map);
+        allLayers.push(polyline);
+        drawingLine = [];
+      }
+    }
+  });
 
-  // Cargar nodos guardados
-  const savedPoints = JSON.parse(localStorage.getItem("ftthPoints") || "[]");
-  savedPoints.forEach(p => createMarker(p.lat, p.lng, p.name));
+  function save() {
+    const geojson = allLayers.map(l => l.toGeoJSON());
+    localStorage.setItem('mymap', JSON.stringify(geojson));
+    alert("Proyecto guardado");
+  }
 
-  // Cargar líneas guardadas
-  const savedLines = JSON.parse(localStorage.getItem("ftthLines") || "[]");
-  savedLines.forEach(l => drawLineFromData(l));
+  function load() {
+    allLayers.forEach(l => map.removeLayer(l));
+    allLayers = [];
 
-  function createMarker(lat, lng, name = "Nodo FTTH") {
-    const marker = L.marker([lat, lng], { draggable: true }).addTo(map);
-    marker.name = name;
-
-    marker.bindPopup(`
-      <b>Editar Nodo:</b><br>
-      <input type="text" value="${name}" 
-        oninput="this.dataset.value = this.value" />
-      <br><button onclick="updateName(this)">💾 Guardar</button>
-    `);
-
-    marker.on("dragend", saveData);
-    marker.on("click", () => {
-      if (drawingLine) {
-        if (!startMarker) {
-          startMarker = marker;
-        } else {
-          const endMarker = marker;
-          const type = document.getElementById("lineType").value;
-          const latlngs = [startMarker.getLatLng(), endMarker.getLatLng()];
-          const polyline = L.polyline(latlngs, {
-            color: lineColors[type],
-            weight: 4
-          }).addTo(map);
-          lines.push({ start: startMarker.getLatLng(), end: endMarker.getLatLng(), type });
-          drawingLine = false;
-          startMarker = null;
-          saveData();
-        }
-      } else {
-        marker.openPopup();
+    const geojson = JSON.parse(localStorage.getItem('mymap') || "[]");
+    geojson.forEach(g => {
+      if (g.geometry.type === "Point") {
+        const marker = L.marker(g.geometry.coordinates.reverse()).addTo(map);
+        marker.bindTooltip("Punto cargado", {permanent: true}).openTooltip();
+        allLayers.push(marker);
+      } else if (g.geometry.type === "LineString") {
+        const color = g.properties.color || "black";
+        const line = L.polyline(g.geometry.coordinates.map(c => c.reverse()), { color, weight: 4 }).addTo(map);
+        allLayers.push(line);
       }
     });
-
-    markers.push(marker);
-  }
-
-  function updateName(btn) {
-    const popup = btn.closest(".leaflet-popup-content");
-    const input = popup.querySelector("input");
-    const newName = input.dataset.value || "Nodo FTTH";
-
-    const marker = markers.find(m => m._popup && m._popup._content.includes(input.value));
-    if (marker) {
-      marker.name = newName;
-      marker.closePopup();
-      saveData();
-    }
-  }
-
-  function addPoint() {
-    const c = map.getCenter();
-    createMarker(c.lat, c.lng, "Nuevo Nodo");
-    saveData();
-  }
-
-  function startLine() {
-    drawingLine = true;
-    startMarker = null;
-    alert("Haz clic en dos nodos para conectar con una línea.");
-  }
-
-  function drawLineFromData(data) {
-    const poly = L.polyline(
-      [data.start, data.end],
-      { color: lineColors[data.type], weight: 4 }
-    ).addTo(map);
-  }
-
-  function saveData() {
-    const pts = markers.map(m => ({
-      lat: m.getLatLng().lat,
-      lng: m.getLatLng().lng,
-      name: m.name
-    }));
-    localStorage.setItem("ftthPoints", JSON.stringify(pts));
-    localStorage.setItem("ftthLines", JSON.stringify(lines));
-  }
-
-  function clearAll() {
-    if (!confirm("¿Seguro que quieres borrar todo?")) return;
-    markers.forEach(m => map.removeLayer(m));
-    lines.forEach(l => map.removeLayer(l));
-    markers = [];
-    lines = [];
-    localStorage.clear();
-    location.reload();
+    alert("Proyecto cargado");
   }
 </script>
-
 </body>
 </html>

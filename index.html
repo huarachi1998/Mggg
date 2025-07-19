@@ -1,76 +1,47 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <title>Mapa FTTH - Meganet</title>
-    <meta charset="utf-8" />
-    <style>
-      #map {
-        height: 100vh;
-        width: 100%;
-      }
-      .gm-style-iw {
-        font-size: 14px;
-        line-height: 1.5;
-      }
-    </style>
-    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC2OKbHXMKYn43pNxNtZujiAqIEmyBHHo0&libraries=geometry,drawing"></script>
-    <script>
-      let map, infoWindow;
+<head>
+  <meta charset="utf-8" />
+  <title>Mapa FTTH - Meganet</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet-measure/dist/leaflet-measure.css" />
+  <style>
+    #map { height: 100vh; width: 100%; }
+  </style>
+</head>
+<body>
+  <div id="map"></div>
 
-      function initMap() {
-        map = new google.maps.Map(document.getElementById("map"), {
-          center: { lat: -17.3949, lng: -66.1568 }, // Ubicación de Nodo Tunari
-          zoom: 14,
-        });
+  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+  <script src="https://unpkg.com/leaflet-measure/dist/leaflet-measure.min.js"></script>
 
-        infoWindow = new google.maps.InfoWindow();
+  <script>
+    // Iniciar el mapa centrado en el área de Tunari
+    const map = L.map('map').setView([-17.3949, -66.1568], 14);
 
-        // 🔴 Nodo Tunari
-        const nodoTunari = new google.maps.Marker({
-          position: { lat: -17.3949, lng: -66.1568 },
-          map,
-          title: "Nodo Tunari",
-        });
+    // Capa base de OpenStreetMap
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      maxZoom: 19,
+      attribution: '© OpenStreetMap'
+    }).addTo(map);
 
-        // 💬 Etiqueta emergente
-        const contenido = `
-          <strong>NODO TUNARI</strong><br>
-          VER LOS PLANES<br>
-          Contacto: 77445566
-        `;
+    // Marcador de Nodo Tunari
+    const nodo = L.marker([-17.3949, -66.1568]).addTo(map);
+    nodo.bindPopup(`
+      <strong>NODO TUNARI</strong><br>
+      VER LOS PLANES<br>
+      Contacto: 77445566
+    `).openPopup();
 
-        nodoTunari.addListener("click", () => {
-          infoWindow.setContent(contenido);
-          infoWindow.open(map, nodoTunari);
-        });
-
-        // ✏️ Herramienta para medir distancias
-        const drawingManager = new google.maps.drawing.DrawingManager({
-          drawingMode: null,
-          drawingControl: true,
-          drawingControlOptions: {
-            position: google.maps.ControlPosition.TOP_CENTER,
-            drawingModes: ["polyline"],
-          },
-        });
-        drawingManager.setMap(map);
-
-        // 🧮 Mostrar distancia al trazar línea
-        google.maps.event.addListener(drawingManager, 'polylinecomplete', function (line) {
-          const path = line.getPath();
-          let distance = 0;
-          for (let i = 0; i < path.getLength() - 1; i++) {
-            distance += google.maps.geometry.spherical.computeDistanceBetween(
-              path.getAt(i),
-              path.getAt(i + 1)
-            );
-          }
-          alert("Distancia total: " + (distance / 1000).toFixed(2) + " km");
-        });
-      }
-    </script>
-  </head>
-  <body onload="initMap()">
-    <div id="map"></div>
-  </body>
+    // Herramienta para medir distancias
+    L.control.measure({
+      primaryLengthUnit: 'kilometers',
+      secondaryLengthUnit: 'meters',
+      primaryAreaUnit: 'hectares',
+      activeColor: '#e74c3c',
+      completedColor: '#2ecc71'
+    }).addTo(map);
+  </script>
+</body>
 </html>

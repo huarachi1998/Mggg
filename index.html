@@ -3,153 +3,149 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>MegaFibra | Te estoy viendo</title>
+<title>MegaFibra | Cara tierna y asustada</title>
 <style>
   body {
     margin: 0;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background: #001f3f;
-    color: #00ccff;
+    background: #fff8f0;
+    color: #333;
     display: flex;
     flex-direction: column;
     min-height: 100vh;
     justify-content: center;
     align-items: center;
-    overflow: hidden;
   }
   h1 {
-    font-size: 3rem;
-    font-weight: 900;
+    font-size: 2.5rem;
+    color: #d2691e;
     margin-bottom: 2rem;
-    letter-spacing: 0.1em;
-    color: #00ffff;
-    text-shadow:
-      0 0 5px #00ffff,
-      0 0 10px #00ffff,
-      0 0 20px #00ffff,
-      0 0 40px #00ffff;
-    animation: sparkle 1.5s infinite alternate;
-  }
-  @keyframes sparkle {
-    0%, 100% {text-shadow:
-      0 0 5px #00ffff,
-      0 0 10px #00ffff,
-      0 0 20px #00ffff,
-      0 0 40px #00ffff;}
-    50% {text-shadow:
-      0 0 10px #00ffff,
-      0 0 15px #00ffff,
-      0 0 30px #00ffff,
-      0 0 60px #00ffff;}
   }
   svg {
-    width: 250px;
-    height: 250px;
-    filter: drop-shadow(0 0 10px #00ccff);
+    width: 280px;
+    height: 280px;
   }
-  /* Ojos abiertos y cerrados */
-  .eye-open {
-    transition: opacity 0.3s ease;
+  /* Cara tierna */
+  .face {
+    fill: #ffd8b1;
+    stroke: #e27b00;
+    stroke-width: 4;
   }
-  .eye-closed {
-    opacity: 0;
-    transition: opacity 0.3s ease;
+  .eye-white {
+    fill: white;
   }
-  .eye-lid {
-    opacity: 0;
-    transition: opacity 0.3s ease;
+  .eye-pupil {
+    fill: #663300;
+    transition: transform 0.3s ease;
   }
-  .eye-lid.visible {
-    opacity: 1;
+  .cheeks {
+    fill: #f7c6a3;
+    opacity: 0.8;
   }
-  /* Sonrisa */
-  .smile {
+  .mouth-smile {
+    stroke: #663300;
+    stroke-width: 4;
+    fill: none;
+    transition: opacity 0.5s ease;
+  }
+  /* Expresión asustada */
+  .mouth-open {
+    stroke: #cc3300;
+    stroke-width: 5;
+    fill: #ff6666;
     opacity: 0;
     transition: opacity 0.5s ease;
   }
-  .smile.visible {
+  .mouth-open.visible {
     opacity: 1;
   }
-  .mouth-neutral {
-    transition: opacity 0.5s ease;
+  .eye-pupil.scared {
+    transform: scale(0.6) translateY(-6px);
+    transition: transform 0.3s ease;
   }
-  .mouth-neutral.hidden {
+  .eyebrow {
+    stroke: #663300;
+    stroke-width: 4;
+    fill: none;
     opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+  .eyebrow.visible {
+    opacity: 1;
   }
 </style>
 </head>
 <body>
 
-<h1 id="sparkle-text">¡Te estoy viendo!</h1>
+<h1 id="msg">¡Hola! Soy tu conexión MegaFibra 😊</h1>
 
-<svg viewBox="0 0 200 200" role="img" aria-label="Cara animada que abre y cierra ojos y sonríe">
-  <circle cx="100" cy="100" r="90" fill="#ffcc99" stroke="#cc9966" stroke-width="4"/>
+<svg viewBox="0 0 200 200" role="img" aria-label="Cara tierna y luego asustada">
+  <circle class="face" cx="100" cy="100" r="90" />
   
-  <!-- Ojo izquierdo abierto -->
-  <g id="eye-left-open" class="eye-open">
-    <circle cx="65" cy="85" r="20" fill="white"/>
-    <circle cx="70" cy="85" r="10" fill="#004080"/>
+  <!-- Mejillas -->
+  <circle class="cheeks" cx="60" cy="130" r="20" />
+  <circle class="cheeks" cx="140" cy="130" r="20" />
+  
+  <!-- Ojos -->
+  <g>
+    <circle class="eye-white" cx="65" cy="85" r="25" />
+    <circle id="pupil-left" class="eye-pupil" cx="65" cy="85" r="12" />
   </g>
-  <!-- Ojo izquierdo cerrado (línea) -->
-  <line id="eye-left-closed" class="eye-lid" x1="45" y1="85" x2="85" y2="85" stroke="#004080" stroke-width="6" stroke-linecap="round"/>
-  
-  <!-- Ojo derecho abierto -->
-  <g id="eye-right-open" class="eye-open">
-    <circle cx="130" cy="85" r="20" fill="white"/>
-    <circle cx="125" cy="85" r="10" fill="#004080"/>
+  <g>
+    <circle class="eye-white" cx="135" cy="85" r="25" />
+    <circle id="pupil-right" class="eye-pupil" cx="135" cy="85" r="12" />
   </g>
-  <!-- Ojo derecho cerrado (línea) -->
-  <line id="eye-right-closed" class="eye-lid" x1="110" y1="85" x2="150" y2="85" stroke="#004080" stroke-width="6" stroke-linecap="round"/>
   
-  <!-- Boca neutral -->
-  <path id="mouth-neutral" class="mouth-neutral" d="M 70 130 Q 100 160 130 130" stroke="#cc9966" stroke-width="5" fill="none" stroke-linecap="round"/>
+  <!-- Cejas asustadas -->
+  <path id="eyebrow-left" class="eyebrow" d="M40 55 Q65 40 90 55" />
+  <path id="eyebrow-right" class="eyebrow" d="M110 55 Q135 40 160 55" />
   
   <!-- Boca sonriente -->
-  <path id="mouth-smile" class="smile" d="M 70 135 Q 100 180 130 135" stroke="#004080" stroke-width="6" fill="none" stroke-linecap="round"/>
+  <path id="mouth-smile" class="mouth-smile" d="M60 135 Q100 180 140 135" />
+  
+  <!-- Boca abierta asustada -->
+  <ellipse id="mouth-open" class="mouth-open" cx="100" cy="150" rx="20" ry="30" />
 </svg>
 
 <script>
-  const eyeLeftOpen = document.getElementById('eye-left-open');
-  const eyeLeftClosed = document.getElementById('eye-left-closed');
-  const eyeRightOpen = document.getElementById('eye-right-open');
-  const eyeRightClosed = document.getElementById('eye-right-closed');
-  const mouthNeutral = document.getElementById('mouth-neutral');
+  const msg = document.getElementById('msg');
+  const pupilLeft = document.getElementById('pupil-left');
+  const pupilRight = document.getElementById('pupil-right');
   const mouthSmile = document.getElementById('mouth-smile');
-  const sparkleText = document.getElementById('sparkle-text');
+  const mouthOpen = document.getElementById('mouth-open');
+  const eyebrowLeft = document.getElementById('eyebrow-left');
+  const eyebrowRight = document.getElementById('eyebrow-right');
 
-  function blink() {
-    // Cierra ojos
-    eyeLeftOpen.classList.add('eye-closed');
-    eyeLeftOpen.classList.remove('eye-open');
-    eyeRightOpen.classList.add('eye-closed');
-    eyeRightOpen.classList.remove('eye-open');
-    eyeLeftClosed.classList.add('visible');
-    eyeRightClosed.classList.add('visible');
-
-    // Abrir después de 400ms
-    setTimeout(() => {
-      eyeLeftOpen.classList.remove('eye-closed');
-      eyeLeftOpen.classList.add('eye-open');
-      eyeRightOpen.classList.remove('eye-closed');
-      eyeRightOpen.classList.add('eye-open');
-      eyeLeftClosed.classList.remove('visible');
-      eyeRightClosed.classList.remove('visible');
-    }, 400);
-  }
-
-  function changeToSmile() {
-    mouthNeutral.classList.add('hidden');
-    mouthSmile.classList.add('visible');
-    sparkleText.textContent = '¡chomin!';
-  }
-
-  // Ciclo: Parpadear cada 3s, cambiar a sonrisa a los 10s
-  setInterval(blink, 3000);
-
+  // Después de 7 segundos, cambia expresión a asustada
   setTimeout(() => {
-    changeToSmile();
-  }, 10000);
+    // Cambiar mensaje
+    msg.textContent = "¡Oh! ¿Qué fue eso? 😲";
+    msg.style.color = "#cc3300";
 
+    // Cambiar ojos
+    pupilLeft.classList.add('scared');
+    pupilRight.classList.add('scared');
+
+    // Mostrar cejas
+    eyebrowLeft.classList.add('visible');
+    eyebrowRight.classList.add('visible');
+
+    // Cambiar boca: esconder sonrisa, mostrar boca abierta
+    mouthSmile.style.opacity = '0';
+    mouthOpen.classList.add('visible');
+  }, 7000);
+
+  // Opcional: volver a tierna después de 14 segundos
+  setTimeout(() => {
+    msg.textContent = "Tranquilo, todo está bien 😊";
+    msg.style.color = "#d2691e";
+    pupilLeft.classList.remove('scared');
+    pupilRight.classList.remove('scared');
+    eyebrowLeft.classList.remove('visible');
+    eyebrowRight.classList.remove('visible');
+    mouthSmile.style.opacity = '1';
+    mouthOpen.classList.remove('visible');
+  }, 14000);
 </script>
 
 </body>

@@ -1,59 +1,32 @@
 <!DOCTYPE html>
-<html>
+<html lang="es">
 <head>
-  <title>Mapa FTTH – Puntos My Maps</title>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <link rel="stylesheet"
-    href="https://unpkg.com/leaflet/dist/leaflet.css" />
-  <style>
-    #map { height: 100vh; width: 100%; }
-    #info {
-      position: absolute; top: 10px; left: 50%;
-      transform: translateX(-50%);
-      background: white;
-      padding: 6px 12px;
-      font-family: Arial, sans-serif;
-      font-size: 14px;
-      border-radius: 4px;
-      box-shadow: 0 0 5px rgba(0,0,0,0.3);
-      z-index: 1000;
-    }
-  </style>
+    <title>Mapa FTTH - Puntos de Red</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+         integrity="sha256-p4NxAoJBhIIN+hmNHrzxHjWSZXoVAOLAs0uFgwbERcly"
+         crossorigin=""/>
+    
+    <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css" />
+
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <div id="info">Mapa cargado con tus puntos. Haz clic en uno.</div>
-  <div id="map"></div>
+    <div id="header">
+        <h1>Mapa de Red FTTH</h1>
+        <div class="info-line">
+            <span>Ciudad: Cochabamba</span>
+            <span>Proveedor: Tu Proveedor Aquí</span>
+            <span>Total Puntos: <span id="total-points">0</span></span>
+        </div>
+    </div>
 
-  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
-  <script>
-    const map = L.map('map').setView([-17.3949, -66.1568], 14);
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      attribution: '© OpenStreetMap contributors'
-    }).addTo(map);
+    <div id="map"></div>
 
-    // Define iconos según tipo (ajusta URLs si tienes tus íconos)
-    const icons = {
-      nodo: L.icon({ iconUrl: 'https://cdn-icons-png.flaticon.com/512/684/684908.png', iconSize: [32,32], iconAnchor: [16,32] }),
-      caja: L.icon({ iconUrl: 'https://cdn-icons-png.flaticon.com/512/252/252025.png', iconSize: [24,24], iconAnchor: [12,24] })
-    };
-
-    fetch('tus_puntos.geojson')
-      .then(res => res.json())
-      .then(data => {
-        L.geoJSON(data, {
-          pointToLayer: (feature, latlng) => {
-            const tipo = feature.properties.tipo || 'caja';
-            const nombre = feature.properties.nombre || '';
-            return L.marker(latlng, {
-              icon: icons[tipo] || icons['caja']
-            }).bindPopup(`<b>${nombre}</b><br>Tipo: ${tipo}`);
-          }
-        }).addTo(map);
-      })
-      .catch(err => {
-        document.getElementById('info').innerText = 'Error cargando puntos: ' + err;
-      });
-  </script>
-</body>
-</html>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+         integrity="sha256-20nEFh3zQj/W3X6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b6/2a0T3j6S0t/b

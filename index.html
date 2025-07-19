@@ -2,108 +2,157 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
-  <title>Editor Mapa FTTH</title>
+  <title>Editor FTTH Completo</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <style>
     html, body, #map { height: 100%; margin: 0; }
-    .popup-form input {
-      width: 100%;
-      padding: 4px;
-      margin-top: 4px;
-    }
-    .leaflet-popup-content-wrapper {
-      min-width: 200px;
-    }
     .toolbar {
       position: absolute;
       top: 10px; left: 10px;
       background: white;
       padding: 10px;
-      border-radius: 8px;
+      border-radius: 10px;
       z-index: 1000;
-      box-shadow: 0 0 10px rgba(0,0,0,0.2);
+      box-shadow: 0 0 10px rgba(0,0,0,0.3);
+    }
+    .toolbar select, .toolbar button {
+      margin: 5px 0;
+      width: 100%;
     }
   </style>
 </head>
 <body>
+
 <div class="toolbar">
-  <button onclick="addPoint()">➕ Añadir Punto</button>
-  <button onclick="clearPoints()">🗑 Borrar Todo</button>
+  <button onclick="addPoint()">➕ Añadir Nodo</button>
+  <button onclick="startLine()">🔗 Dibujar Línea</button>
+  <select id="lineType">
+    <option value="2h">2 Hilos (azul)</option>
+    <option value="4h">4 Hilos (verde)</option>
+    <option value="troncal">Troncal (rojo)</option>
+  </select>
+  <button onclick="clearAll()">🗑 Borrar Todo</button>
 </div>
+
 <div id="map"></div>
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
   const map = L.map("map").setView([-16.5, -68.1], 13);
-
   L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
     attribution: "© OpenStreetMap",
     maxZoom: 19,
   }).addTo(map);
 
   let markers = [];
+  let lines = [];
+  let drawingLine = false;
+  let startMarker = null;
 
-  // Cargar desde LocalStorage
+  const lineColors = {
+    '2h': 'blue',
+    '4h': 'green',
+    'troncal': 'red'
+  };
+
+  // Cargar nodos guardados
   const savedPoints = JSON.parse(localStorage.getItem("ftthPoints") || "[]");
   savedPoints.forEach(p => createMarker(p.lat, p.lng, p.name));
 
+  // Cargar líneas guardadas
+  const savedLines = JSON.parse(localStorage.getItem("ftthLines") || "[]");
+  savedLines.forEach(l => drawLineFromData(l));
+
   function createMarker(lat, lng, name = "Nodo FTTH") {
     const marker = L.marker([lat, lng], { draggable: true }).addTo(map);
-
-    const updatePopup = () => {
-      marker.bindPopup(`
-        <div class="popup-form">
-          <label><b>Nombre:</b></label>
-          <input type="text" value="${marker.name}" 
-                 oninput="this.parentElement.dataset.newname = this.value" />
-          <br><button onclick="saveName(this)">💾 Guardar</button>
-        </div>
-      `).openPopup();
-    };
-
     marker.name = name;
-    updatePopup();
 
-    marker.on("click", () => updatePopup());
-    marker.on("dragend", saveAllMarkers);
+    marker.bindPopup(`
+      <b>Editar Nodo:</b><br>
+      <input type="text" value="${name}" 
+        oninput="this.dataset.value = this.value" />
+      <br><button onclick="updateName(this)">💾 Guardar</button>
+    `);
+
+    marker.on("dragend", saveData);
+    marker.on("click", () => {
+      if (drawingLine) {
+        if (!startMarker) {
+          startMarker = marker;
+        } else {
+          const endMarker = marker;
+          const type = document.getElementById("lineType").value;
+          const latlngs = [startMarker.getLatLng(), endMarker.getLatLng()];
+          const polyline = L.polyline(latlngs, {
+            color: lineColors[type],
+            weight: 4
+          }).addTo(map);
+          lines.push({ start: startMarker.getLatLng(), end: endMarker.getLatLng(), type });
+          drawingLine = false;
+          startMarker = null;
+          saveData();
+        }
+      } else {
+        marker.openPopup();
+      }
+    });
 
     markers.push(marker);
   }
 
-  function saveName(btn) {
-    const popup = btn.closest(".popup-form");
-    const name = popup.dataset.newname || "Nodo FTTH";
-    const marker = markers.find(m => m._popup._content.includes(name));
+  function updateName(btn) {
+    const popup = btn.closest(".leaflet-popup-content");
+    const input = popup.querySelector("input");
+    const newName = input.dataset.value || "Nodo FTTH";
+
+    const marker = markers.find(m => m._popup && m._popup._content.includes(input.value));
     if (marker) {
-      marker.name = name;
+      marker.name = newName;
       marker.closePopup();
-      saveAllMarkers();
+      saveData();
     }
   }
 
   function addPoint() {
-    const center = map.getCenter();
-    createMarker(center.lat, center.lng, "Nuevo Nodo");
-    saveAllMarkers();
+    const c = map.getCenter();
+    createMarker(c.lat, c.lng, "Nuevo Nodo");
+    saveData();
   }
 
-  function clearPoints() {
-    if (confirm("¿Borrar todos los puntos?")) {
-      markers.forEach(m => map.removeLayer(m));
-      markers = [];
-      localStorage.removeItem("ftthPoints");
-    }
+  function startLine() {
+    drawingLine = true;
+    startMarker = null;
+    alert("Haz clic en dos nodos para conectar con una línea.");
   }
 
-  function saveAllMarkers() {
-    const data = markers.map(m => ({
+  function drawLineFromData(data) {
+    const poly = L.polyline(
+      [data.start, data.end],
+      { color: lineColors[data.type], weight: 4 }
+    ).addTo(map);
+  }
+
+  function saveData() {
+    const pts = markers.map(m => ({
       lat: m.getLatLng().lat,
       lng: m.getLatLng().lng,
-      name: m.name || "Nodo FTTH"
+      name: m.name
     }));
-    localStorage.setItem("ftthPoints", JSON.stringify(data));
+    localStorage.setItem("ftthPoints", JSON.stringify(pts));
+    localStorage.setItem("ftthLines", JSON.stringify(lines));
+  }
+
+  function clearAll() {
+    if (!confirm("¿Seguro que quieres borrar todo?")) return;
+    markers.forEach(m => map.removeLayer(m));
+    lines.forEach(l => map.removeLayer(l));
+    markers = [];
+    lines = [];
+    localStorage.clear();
+    location.reload();
   }
 </script>
+
 </body>
 </html>

@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
   <meta charset="utf-8" />
-  <title>Mapa ISP Profesional</title>
+  <title>Mapa ISP Bolivia</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <!-- Leaflet CSS -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
@@ -10,6 +10,7 @@
   <style>
     body, html { margin: 0; padding: 0; }
     #map { height: 100vh; width: 100vw; }
+    .leaflet-popup-content { font-family: 'Segoe UI', sans-serif; font-size: 14px; }
   </style>
 </head>
 <body>
@@ -23,20 +24,14 @@
     const map = L.map('map').setView([-16.51, -68.13], 14);
 
     // Capas base
-    const callejero = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      attribution: '© OpenStreetMap'
-    });
+    const callejero = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: '© OpenStreetMap' });
+    const satelite = L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', { attribution: '© OpenTopoMap' });
+    callejero.addTo(map);
 
-    const satelite = L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', {
-      attribution: '© OpenTopoMap'
-    });
-
-    callejero.addTo(map); // capa inicial
-
-    // Grupos de capas
-    const capaNAPs = L.layerGroup();
-    const capaRutas = L.layerGroup();
-    const capaCobertura = L.layerGroup();
+    // Capas temáticas
+    const capaNAPs = L.layerGroup().addTo(map);
+    const capaRutas = L.layerGroup().addTo(map);
+    const capaCobertura = L.layerGroup().addTo(map);
 
     // Ícono NAP
     const iconNAP = L.icon({
@@ -75,36 +70,27 @@
       fillOpacity: 0.3
     }).addTo(capaCobertura).bindPopup('Zona de cobertura ISP');
 
-    // Control de capas estilo My Maps
+    // Control de capas
     const capasBase = {
       "Callejero": callejero,
       "Satélite": satelite
     };
-
     const capasTematicas = {
       "NAPs": capaNAPs,
       "Rutas": capaRutas,
       "Cobertura": capaCobertura
     };
-
     L.control.layers(capasBase, capasTematicas).addTo(map);
 
-    // Agrega capas al mapa
-    capaNAPs.addTo(map);
-    capaCobertura.addTo(map);
-
-    // Ruteo por calles desde NAP al punto clicado
+    // Ruteo por calles desde NAP al clic
     let controlRuta;
     map.on('click', function(e) {
       const destino = e.latlng;
-
       L.marker(destino).addTo(capaRutas)
         .bindPopup(`Destino<br>${destino.lat.toFixed(5)}, ${destino.lng.toFixed(5)}`)
         .openPopup();
 
-      if (controlRuta) {
-        map.removeControl(controlRuta);
-      }
+      if (controlRuta) map.removeControl(controlRuta);
 
       controlRuta = L.Routing.control({
         waypoints: [puntoNAP, destino],

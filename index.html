@@ -4,7 +4,6 @@
   <meta charset="utf-8" />
   <title>Mapa Interactivo ISP</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <!-- Leaflet CSS -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <style>
     body, html { margin: 0; padding: 0; }
@@ -14,36 +13,30 @@
 <body>
   <div id="map"></div>
 
-  <!-- Leaflet JS -->
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <script>
-    // Inicializa el mapa
     const map = L.map('map').setView([-16.5, -68.15], 13);
 
-    // Capa base (OpenStreetMap)
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       attribution: '&copy; OpenStreetMap contributors'
     }).addTo(map);
 
-    // Punto principal
-    L.marker([-16.5, -68.15]).addTo(map).bindPopup('La Paz - Zona Central').openPopup();
+    let puntos = []; // Almacena los puntos clicados
 
-    // Línea de ejemplo
-    const ruta = [
-      [-16.5, -68.15],
-      [-16.52, -68.13],
-      [-16.51, -68.11]
-    ];
-    L.polyline(ruta, {color: 'red', weight: 4}).addTo(map).bindPopup('Ruta Gamer');
+    map.on('click', function(e) {
+      const coord = [e.latlng.lat, e.latlng.lng];
+      puntos.push(coord);
 
-    // Polígono de cobertura
-    const zona = [
-      [-16.53, -68.14],
-      [-16.54, -68.12],
-      [-16.52, -68.10],
-      [-16.51, -68.13]
-    ];
-    L.polygon(zona, {color: 'blue'}).addTo(map).bindPopup('Zona de cobertura ISP');
+      // Agrega marcador con popup
+      L.marker(coord).addTo(map)
+        .bindPopup(`Punto ${puntos.length}<br>Lat: ${coord[0].toFixed(5)}<br>Lng: ${coord[1].toFixed(5)}`)
+        .openPopup();
+
+      // Si hay más de un punto, dibuja la línea
+      if (puntos.length > 1) {
+        L.polyline(puntos, {color: 'red', weight: 3}).addTo(map);
+      }
+    });
   </script>
 </body>
 </html>

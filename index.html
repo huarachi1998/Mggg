@@ -2,45 +2,80 @@
 <html lang="es">
 <head>
   <meta charset="utf-8" />
-  <title>Ruta por calles con Leaflet</title>
+  <title>Mapa ISP - NAP y rutas</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- Leaflet CSS -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine@latest/dist/leaflet-routing-machine.css" />
   <style>
+    body, html { margin: 0; padding: 0; }
     #map { height: 100vh; width: 100vw; }
   </style>
 </head>
 <body>
   <div id="map"></div>
 
+  <!-- Leaflet JS -->
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <script src="https://unpkg.com/leaflet-routing-machine@latest/dist/leaflet-routing-machine.js"></script>
 
   <script>
-    const map = L.map('map').setView([-16.5, -68.15], 13);
+    const map = L.map('map').setView([-16.51, -68.13], 14);
+
+    // Capa base
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       attribution: '&copy; OpenStreetMap contributors'
     }).addTo(map);
 
-    let puntoInicio = L.latLng(-16.5, -68.15); // Punto fijo (ej. oficina ISP)
-    let controlRuta;
+    // Ícono personalizado para NAP
+    const iconNAP = L.icon({
+      iconUrl: 'https://cdn-icons-png.flaticon.com/512/1041/1041916.png',
+      iconSize: [32, 32],
+      iconAnchor: [16, 32],
+      popupAnchor: [0, -32]
+    });
 
+    // Punto NAP
+    const puntoNAP = L.latLng(-16.51, -68.13);
+    L.marker(puntoNAP, { icon: iconNAP })
+      .addTo(map)
+      .bindPopup('<b>NAP Central</b><br>Distribución de fibra óptica')
+      .openPopup();
+
+    // Caja NAP como rectángulo
+    const cajaNAP = [
+      [-16.5105, -68.1305],
+      [-16.5095, -68.1295]
+    ];
+    L.rectangle(cajaNAP, {
+      color: 'orange',
+      weight: 2,
+      fillOpacity: 0.4
+    }).addTo(map).bindPopup('Caja NAP - Área física');
+
+    // Clics interactivos + ruta por calles
+    let controlRuta;
     map.on('click', function(e) {
       const destino = e.latlng;
 
-      // Elimina ruta anterior si existe
+      // Agrega marcador
+      L.marker(destino).addTo(map)
+        .bindPopup(`Punto ${destino.lat.toFixed(5)}, ${destino.lng.toFixed(5)}`)
+        .openPopup();
+
+      // Elimina ruta anterior
       if (controlRuta) {
         map.removeControl(controlRuta);
       }
 
-      // Crea nueva ruta por calles
+      // Ruta por calles desde NAP al punto clicado
       controlRuta = L.Routing.control({
-        waypoints: [puntoInicio, destino],
+        waypoints: [puntoNAP, destino],
         routeWhileDragging: false,
         show: false,
         language: 'es',
         createMarker: function(i, wp) {
-          return L.marker(wp).bindPopup(i === 0 ? 'Inicio' : 'Destino').openPopup();
+          return L.marker(wp).bindPopup(i === 0 ? 'NAP Central' : 'Destino').openPopup();
         }
       }).addTo(map);
     });

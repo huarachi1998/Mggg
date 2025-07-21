@@ -2,11 +2,11 @@
 <html lang="es">
 <head>
   <meta charset="utf-8" />
-  <title>Mapa Interactivo ISP</title>
+  <title>Ruta por calles con Leaflet</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine@latest/dist/leaflet-routing-machine.css" />
   <style>
-    body, html { margin: 0; padding: 0; }
     #map { height: 100vh; width: 100vw; }
   </style>
 </head>
@@ -14,28 +14,35 @@
   <div id="map"></div>
 
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="https://unpkg.com/leaflet-routing-machine@latest/dist/leaflet-routing-machine.js"></script>
+
   <script>
     const map = L.map('map').setView([-16.5, -68.15], 13);
-
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       attribution: '&copy; OpenStreetMap contributors'
     }).addTo(map);
 
-    let puntos = []; // Almacena los puntos clicados
+    let puntoInicio = L.latLng(-16.5, -68.15); // Punto fijo (ej. oficina ISP)
+    let controlRuta;
 
     map.on('click', function(e) {
-      const coord = [e.latlng.lat, e.latlng.lng];
-      puntos.push(coord);
+      const destino = e.latlng;
 
-      // Agrega marcador con popup
-      L.marker(coord).addTo(map)
-        .bindPopup(`Punto ${puntos.length}<br>Lat: ${coord[0].toFixed(5)}<br>Lng: ${coord[1].toFixed(5)}`)
-        .openPopup();
-
-      // Si hay más de un punto, dibuja la línea
-      if (puntos.length > 1) {
-        L.polyline(puntos, {color: 'red', weight: 3}).addTo(map);
+      // Elimina ruta anterior si existe
+      if (controlRuta) {
+        map.removeControl(controlRuta);
       }
+
+      // Crea nueva ruta por calles
+      controlRuta = L.Routing.control({
+        waypoints: [puntoInicio, destino],
+        routeWhileDragging: false,
+        show: false,
+        language: 'es',
+        createMarker: function(i, wp) {
+          return L.marker(wp).bindPopup(i === 0 ? 'Inicio' : 'Destino').openPopup();
+        }
+      }).addTo(map);
     });
   </script>
 </body>

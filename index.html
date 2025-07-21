@@ -1,111 +1,49 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>NetBolivia - Internet a tu medida</title>
-  <link rel="stylesheet" href="estilos.css">
+  <meta charset="utf-8" />
+  <title>Mapa Interactivo ISP</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- Leaflet CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <style>
+    body, html { margin: 0; padding: 0; }
+    #map { height: 100vh; width: 100vw; }
+  </style>
 </head>
 <body>
-  <header>
-    <img src="img/logo-netbolivia.png" alt="Logo NetBolivia" class="logo">
-    <h1>NetBolivia</h1>
-    <p>Conectamos hogares y empresas con velocidad real</p>
-    <nav>
-      <ul>
-        <li><a href="#inicio">Inicio</a></li>
-        <li><a href="#servicios">Servicios</a></li>
-        <li><a href="#planes">Planes</a></li>
-        <li><a href="#cobertura">Cobertura</a></li>
-        <li><a href="#contacto">Contacto</a></li>
-      </ul>
-    </nav>
-  </header>
+  <div id="map"></div>
 
-  <section id="inicio">
-    <img src="img/fondo-tecnologico.jpg" alt="Fondo tecnológico" class="hero-img">
-    <h2>Internet confiable donde lo necesites</h2>
-    <p>Instalación rápida, soporte técnico 24/7 y cobertura en El Alto, La Paz y zonas rurales</p>
-    <a href="#planes" class="btn">Contratar ahora</a>
-  </section>
+  <!-- Leaflet JS -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script>
+    // Inicializa el mapa
+    const map = L.map('map').setView([-16.5, -68.15], 13);
 
-  <section id="servicios">
-    <h2>Servicios</h2>
-    <ul>
-      <li>📶 Internet inalámbrico y fibra óptica</li>
-      <li>⚙️ Instalación personalizada</li>
-      <li>🔒 QoS y Speedtest optimizado</li>
-      <li>📺 Internet + TV (opcional)</li>
-      <li>📡 Cobertura en zonas urbanas y rurales</li>
-    </ul>
-    <img src="img/servicio-instalacion.jpg" alt="Instalación técnica" class="section-img">
-  </section>
+    // Capa base (OpenStreetMap)
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '&copy; OpenStreetMap contributors'
+    }).addTo(map);
 
-  <section id="planes">
-    <h2>Planes</h2>
-    <table>
-      <tr>
-        <th>Plan</th>
-        <th>Velocidad</th>
-        <th>Precio</th>
-        <th>Uso recomendado</th>
-      </tr>
-      <tr>
-        <td>Básico</td>
-        <td>10 Mbps / 2 Mbps</td>
-        <td>Bs. 100</td>
-        <td>Navegación y redes sociales</td>
-      </tr>
-      <tr>
-        <td>Intermedio</td>
-        <td>25 Mbps / 5 Mbps</td>
-        <td>Bs. 170</td>
-        <td>Streaming y videollamadas</td>
-      </tr>
-      <tr>
-        <td>Avanzado</td>
-        <td>50 Mbps / 10 Mbps</td>
-        <td>Bs. 250</td>
-        <td>Gaming y trabajo remoto</td>
-      </tr>
-      <tr>
-        <td>Empresarial</td>
-        <td>100 Mbps / 20 Mbps</td>
-        <td>Bs. 390</td>
-        <td>Oficinas y cámaras IP</td>
-      </tr>
-      <tr>
-        <td>Corporativo</td>
-        <td>300 Mbps / 50 Mbps</td>
-        <td>Desde Bs. 850</td>
-        <td>Empresas grandes</td>
-      </tr>
-    </table>
-  </section>
+    // Punto principal
+    L.marker([-16.5, -68.15]).addTo(map).bindPopup('La Paz - Zona Central').openPopup();
 
-  <section id="cobertura">
-    <h2>Cobertura</h2>
-    <p>📍 Instalamos en:</p>
-    <ul>
-      <li>El Alto</li>
-      <li>La Paz</li>
-      <li>Achocalla</li>
-      <li>Viacha</li>
-      <li>Zonas rurales con acceso inalámbrico</li>
-    </ul>
-    <img src="img/mapa-cobertura.png" alt="Mapa de cobertura" class="section-img">
-  </section>
+    // Línea de ejemplo
+    const ruta = [
+      [-16.5, -68.15],
+      [-16.52, -68.13],
+      [-16.51, -68.11]
+    ];
+    L.polyline(ruta, {color: 'red', weight: 4}).addTo(map).bindPopup('Ruta Gamer');
 
-  <section id="contacto">
-    <h2>Contacto</h2>
-    <p>📍 Dirección: Av. 6 de Marzo, Zona 12 de Octubre, El Alto<br>
-       📞 Teléfono: +591 777-00000<br>
-       📧 Email: contacto@netbolivia.com</p>
-    <a href="https://wa.me/59177700000" class="btn">Escríbenos por WhatsApp</a>
-  </section>
-
-  <footer>
-    <p>&copy; 2025 NetBolivia. Todos los derechos reservados.</p>
-  </footer>
+    // Polígono de cobertura
+    const zona = [
+      [-16.53, -68.14],
+      [-16.54, -68.12],
+      [-16.52, -68.10],
+      [-16.51, -68.13]
+    ];
+    L.polygon(zona, {color: 'blue'}).addTo(map).bindPopup('Zona de cobertura ISP');
+  </script>
 </body>
 </html>
